@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace Capsule\Di\Lazy;
 
-class LazyTest extends \PHPUnit\Framework\TestCase
+class LazyCallTest extends \PHPUnit\Framework\TestCase
 {
     public function test__debugInfo()
     {
-        $lazy = new Lazy('foo');
+        $lazy = new LazyCall('foo');
         $expect = ['func' => 'foo', 'args' => []];
         $actual = $lazy->__debugInfo();
         $this->assertSame($expect, $actual);
 
-        $lazy = new Lazy(['foo', 'bar']);
+        $lazy = new LazyCall(['foo', 'bar']);
         $expect = ['func' => '(callable)', 'args' => []];
         $actual = $lazy->__debugInfo();
         $this->assertSame($expect, $actual);
@@ -20,7 +20,7 @@ class LazyTest extends \PHPUnit\Framework\TestCase
 
     public function testResolve()
     {
-        $lazy = new Lazy(
+        $lazy = new LazyCall(
             function ($arg1, $arg2) { return "$arg1 $arg2"; },
             ['hello', 'world']
         );
@@ -31,11 +31,11 @@ class LazyTest extends \PHPUnit\Framework\TestCase
 
     public function testResolvedArrayDescent()
     {
-        $lazy = new Lazy(function () {
+        $lazy = new LazyCall(function () {
             return [
-                new Lazy(function () { return 'foo'; }),
-                new Lazy(function () { return 'bar'; }),
-                new Lazy(function () { return 'baz'; }),
+                new LazyCall(function () { return 'foo'; }),
+                new LazyCall(function () { return 'bar'; }),
+                new LazyCall(function () { return 'baz'; }),
             ];
         });
 
@@ -46,7 +46,7 @@ class LazyTest extends \PHPUnit\Framework\TestCase
 
     public function testProxyInclude()
     {
-        $lazy = new Lazy(
+        $lazy = new LazyCall(
             'include',
             [
                 dirname(__DIR__) . '/include_file.php'
@@ -60,7 +60,7 @@ class LazyTest extends \PHPUnit\Framework\TestCase
 
     public function testProxyRequire()
     {
-        $lazy = new Lazy(
+        $lazy = new LazyCall(
             'require',
             [
                 dirname(__DIR__) . '/include_file.php'

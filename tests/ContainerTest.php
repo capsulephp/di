@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use stdClass;
-use Capsule\Di\Lazy\Lazy;
+use Capsule\Di\Lazy\LazyCall;
 use Capsule\Di\Lazy\LazyNew;
 use Capsule\Di\Lazy\LazyService;
+use stdClass;
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
@@ -42,11 +42,11 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $container->env('no-such-key');
     }
 
-    public function testLazy()
+    public function testCall()
     {
         $container = new FakeContainer();
-        $lazy = $container->lazy('include', 'include_file.php');
-        $this->assertInstanceOf(Lazy::CLASS, $lazy);
+        $lazy = $container->call('include', 'include_file.php');
+        $this->assertInstanceOf(LazyCall::CLASS, $lazy);
     }
 
     public function testDefault()

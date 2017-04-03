@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use stdClass;
-use Capsule\Di\Lazy\Lazy;
 use Capsule\Di\Lazy\LazyAuto;
+use Capsule\Di\Lazy\LazyCall;
+use stdClass;
 
 class FactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -71,7 +71,7 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
     {
         $this->factory->default(stdClass::CLASS)
             ->creator(
-                new Lazy(function () { return new stdClassFactory(); })
+                new LazyCall(function () { return new stdClassFactory(); })
             );
 
         $args = [
@@ -89,7 +89,7 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
     {
         $this->factory->default(stdClass::CLASS)
             ->creator([
-                new Lazy(function () { return new stdClassFactory(); }),
+                new LazyCall(function () { return new stdClassFactory(); }),
                 'new'
             ]);
 
@@ -107,9 +107,9 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
     public function testLazyArgs()
     {
         $this->factory->default(FakeObject::CLASS)
-            ->args(new Lazy( function () { return 'lazy1'; }))
-            ->call('foo', new Lazy( function () { return 'lazy2'; }))
-            ->call('foo', 'test3', new Lazy( function () { return 'lazy4'; }));
+            ->args(new LazyCall( function () { return 'lazy1'; }))
+            ->call('foo', new LazyCall( function () { return 'lazy2'; }))
+            ->call('foo', 'test3', new LazyCall( function () { return 'lazy4'; }));
 
         $actual = $this->factory->new(FakeObject::CLASS);
         $this->assertSame('lazy1', $actual->arg1);

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\Lazy;
 use Capsule\Di\Lazy\LazyAuto;
+use Capsule\Di\Lazy\LazyCall;
 use Capsule\Di\Lazy\LazyInterface;
 use ReflectionClass;
 
@@ -70,7 +70,7 @@ class Factory
         $calls = array_merge($default->getCalls(), $calls);
         foreach ($calls as $call) {
             list ($func, $args) = $call;
-            $args = Lazy::resolve($args);
+            $args = LazyCall::resolve($args);
             $instance->$func(...$args);
         }
 
@@ -87,7 +87,7 @@ class Factory
         if (! $creator) {
             // no, just use `new`
             $args = array_replace($default->getArgs(), $args);
-            $args = Lazy::resolve($args);
+            $args = LazyCall::resolve($args);
             return new $class(...$args);
         }
 
@@ -98,11 +98,11 @@ class Factory
 
         // creator might be an array of lazy object and method name
         if (is_array($creator)) {
-            $creator = Lazy::resolve($creator);
+            $creator = LazyCall::resolve($creator);
         }
 
         // resolve args and call creator
-        $args = Lazy::resolve($args);
+        $args = LazyCall::resolve($args);
         return $creator(...$args);
     }
 

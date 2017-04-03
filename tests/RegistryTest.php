@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
+use Capsule\Di\Lazy\LazyCall;
 use stdClass;
 
 class RegistryTest extends \PHPUnit\Framework\TestCase
@@ -13,7 +14,7 @@ class RegistryTest extends \PHPUnit\Framework\TestCase
 
         $this->assertFalse($registry->has('stdClass'));
 
-        $registry->set('stdClass', new Lazy\Lazy(function () { return new stdClass(); }));
+        $registry->set('stdClass', new LazyCall(function () { return new stdClass(); }));
         $this->assertTrue($registry->has('stdClass'));
 
         $actual = $registry->get('stdClass');

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\Lazy;
+use Capsule\Di\Lazy\LazyCall;
 use Capsule\Di\Lazy\LazyInterface;
 use Capsule\Di\Lazy\LazyNew;
 use Capsule\Di\Lazy\LazyService;
@@ -77,9 +77,9 @@ abstract class AbstractContainer
      * 'require' as well.
      * @param array ...$args Arguments to pass to $func.
      */
-    protected function lazy($func, ...$args) : Lazy
+    protected function call($func, ...$args) : LazyCall
     {
-        return new Lazy($func, $args);
+        return new LazyCall($func, $args);
     }
 
     protected function new(string $class) : LazyNew
@@ -105,6 +105,11 @@ abstract class AbstractContainer
     protected function service(string $id) : LazyService
     {
         return new LazyService($this->registry, $id);
+    }
+
+    protected function callService($id, $func, ...$args) : Lazy
+    {
+        return $this->lazy([$this->service, $func], $args);
     }
 
     /**

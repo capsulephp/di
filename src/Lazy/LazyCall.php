@@ -6,7 +6,7 @@ namespace Capsule\Di\Lazy;
 /**
  * @todo Implement __debugInfo() to restrict output when $func is an object
  */
-class Lazy implements LazyInterface
+class LazyCall implements LazyInterface
 {
     /**
      * @var mixed
@@ -25,7 +25,7 @@ class Lazy implements LazyInterface
                 $arr[$key] = $val();
             }
             if (is_array($arr[$key])) {
-                $arr[$key] = Lazy::resolve($arr[$key]);
+                $arr[$key] = static::resolve($arr[$key]);
             }
         }
         return $arr;
@@ -63,10 +63,10 @@ class Lazy implements LazyInterface
             $func = [$this, "_{$func}"];
         }
 
-        $args = Lazy::resolve($this->args);
+        $args = static::resolve($this->args);
         $result = $func(...$args);
         if (is_array($result)) {
-            $result = Lazy::resolve($result);
+            $result = static::resolve($result);
         }
 
         return $result;
