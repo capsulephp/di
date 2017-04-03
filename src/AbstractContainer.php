@@ -64,7 +64,7 @@ abstract class AbstractContainer
             return $val;
         }
 
-        throw new Exception("'{$key}' environment key not found.");
+        return null;
     }
 
     protected function default(string $class) : Config

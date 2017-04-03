@@ -37,9 +37,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('GLOBAL_VAL_1', $container->env('GLOBAL_KEY_1'));
         $this->assertSame('localVal1', $container->env('localKey1'));
         $this->assertSame('localVal2', $container->env('GLOBAL_KEY_2'));
-
-        $this->expectException(Exception::CLASS);
-        $container->env('no-such-key');
+        $this->assertNull($container->env('no-such-key'));
     }
 
     public function testCall()
