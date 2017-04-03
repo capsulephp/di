@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Capsule\Di;
 
 use Capsule\Di\Lazy\Lazy;
-use Capsule\Di\Lazy\Auto;
+use Capsule\Di\Lazy\LazyAuto;
 use Capsule\Di\Lazy\LazyInterface;
 use ReflectionClass;
 
@@ -52,7 +52,7 @@ class Factory
     /**
      * @return mixed
      */
-    public function get(string $class, array $args = [], array $calls = [])
+    public function new(string $class, array $args = [], array $calls = [])
     {
         if (isset($this->aliases[$class])) {
             $class = $this->aliases[$class];
@@ -119,7 +119,7 @@ class Factory
         foreach ($ctor->getParameters() as $param) {
             $paramClass = $param->getClass();
             if ($paramClass) {
-                $args[] = new Auto($this->registry, $this, $paramClass->name);
+                $args[] = new LazyAuto($this->registry, $this, $paramClass->name);
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
             } else {

@@ -11,7 +11,7 @@ class ServiceTest extends \PHPUnit\Framework\TestCase
     {
         $registry = new Registry();
 
-        $service = new Service(
+        $service = new LazyService(
             $registry,
             'foo'
         );

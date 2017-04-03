@@ -9,10 +9,10 @@ class StdClassFactory
 {
     public function __invoke(...$args)
     {
-        return $this->create(...$args);
+        return $this->new(...$args);
     }
 
-    public function create(...$args)
+    public function new(...$args)
     {
         $instance = new stdClass;
         $instance->args = $args;

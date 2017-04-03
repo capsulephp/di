@@ -6,19 +6,20 @@ namespace Capsule\Di\Lazy;
 use Capsule\Di\Factory;
 use Capsule\Di\Registry;
 
-class CreateTest extends \PHPUnit\Framework\TestCase
+class LazyAutoTest extends \PHPUnit\Framework\TestCase
 {
     public function test__debugInfo()
     {
         $registry = new Registry();
 
-        $create = new Create(
-            new Factory(new Registry()),
+        $auto = new LazyAuto(
+            $registry,
+            new Factory($registry),
             'foo'
         );
 
-        $expect = ['class' => 'foo', 'args' => [], 'calls' => [], 'creator' => false];
-        $actual = $create->__debugInfo();
+        $expect = ['spec' => 'foo'];
+        $actual = $auto->__debugInfo();
         $this->assertSame($expect, $actual);
     }
 }

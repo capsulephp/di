@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Capsule\Di;
 
 use stdClass;
+use Capsule\Di\Lazy\Lazy;
+use Capsule\Di\Lazy\LazyNew;
+use Capsule\Di\Lazy\LazyService;
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
@@ -43,7 +46,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     {
         $container = new FakeContainer();
         $lazy = $container->lazy('include', 'include_file.php');
-        $this->assertInstanceOf(Lazy\Lazy::CLASS, $lazy);
+        $this->assertInstanceOf(Lazy::CLASS, $lazy);
     }
 
     public function testDefault()
@@ -55,27 +58,27 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($default, $repeat);
     }
 
-    public function testCreate()
+    public function testNew()
     {
         $container = new FakeContainer();
-        $lazy = $container->create(stdClass::CLASS);
-        $this->assertInstanceOf(Lazy\Create::CLASS, $lazy);
-        $created = $lazy();
-        $this->assertInstanceOf(stdClass::CLASS, $created);
+        $lazy = $container->new(stdClass::CLASS);
+        $this->assertInstanceOf(LazyNew::CLASS, $lazy);
+        $instance = $lazy();
+        $this->assertInstanceOf(stdClass::CLASS, $instance);
     }
 
-    public function testCreateInstance()
+    public function testNewInstance()
     {
         $container = new FakeContainer();
-        $created = $container->createInstance(stdClass::CLASS);
-        $this->assertInstanceOf(stdClass::CLASS, $created);
+        $instance = $container->newInstance(stdClass::CLASS);
+        $this->assertInstanceOf(stdClass::CLASS, $instance);
     }
 
     public function testAlias()
     {
         $container = new FakeContainer();
         $container->alias(FakeObject::CLASS, stdClass::CLASS);
-        $actual = $container->createInstance(FakeObject::CLASS);
+        $actual = $container->newInstance(FakeObject::CLASS);
         $this->assertInstanceOf(stdClass::CLASS, $actual);
     }
 
@@ -85,7 +88,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $container->provide(stdClass::CLASS);
 
         $lazy = $container->service(stdClass::CLASS);
-        $this->assertInstanceOf(Lazy\Service::CLASS, $lazy);
+        $this->assertInstanceOf(LazyService::CLASS, $lazy);
         $actual = $lazy();
         $this->assertInstanceOf(stdClass::CLASS, $actual);
 
@@ -111,10 +114,10 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     public function testProvideAsAndService()
     {
         $container = new FakeContainer();
-        $container->provideAs('foo', $container->create(stdClass::CLASS));
+        $container->provideAs('foo', $container->new(stdClass::CLASS));
 
         $lazy = $container->service('foo');
-        $this->assertInstanceOf(Lazy\Service::CLASS, $lazy);
+        $this->assertInstanceOf(LazyService::CLASS, $lazy);
         $actual = $lazy();
         $this->assertInstanceOf(stdClass::CLASS, $actual);
 
@@ -128,7 +131,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     public function testProvideAsAndServiceInstance()
     {
         $container = new FakeContainer();
-        $container->provideAs('foo', $container->create(stdClass::CLASS));
+        $container->provideAs('foo', $container->new(stdClass::CLASS));
 
         $actual = $container->serviceInstance('foo');
         $this->assertInstanceOf(stdClass::CLASS, $actual);

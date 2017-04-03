@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Registry;
 
-class Service implements LazyInterface
+class LazyService implements LazyInterface
 {
     /**
      * @var string

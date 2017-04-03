@@ -6,7 +6,7 @@ namespace Capsule\Di\Lazy;
 use Capsule\Di\Factory;
 use Capsule\Di\Registry;
 
-class Auto implements LazyInterface
+class LazyAuto implements LazyInterface
 {
     /**
      * @var string
@@ -45,6 +45,6 @@ class Auto implements LazyInterface
         if ($this->registry->has($this->spec)) {
             return $this->registry->get($this->spec);
         }
-        return $this->factory->get($this->spec);
+        return $this->factory->new($this->spec);
     }
 }

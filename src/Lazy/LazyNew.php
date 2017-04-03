@@ -6,7 +6,7 @@ namespace Capsule\Di\Lazy;
 use Capsule\Di\Config;
 use Capsule\Di\Factory;
 
-class Create extends Config implements LazyInterface
+class LazyNew extends Config implements LazyInterface
 {
     /**
      * @var string
@@ -34,7 +34,7 @@ class Create extends Config implements LazyInterface
      */
     public function __invoke()
     {
-        return $this->factory->get(
+        return $this->factory->new(
             $this->class,
             $this->getArgs(),
             $this->getCalls()

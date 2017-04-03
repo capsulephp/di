@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\Create;
 use Capsule\Di\Lazy\Lazy;
 use Capsule\Di\Lazy\LazyInterface;
-use Capsule\Di\Lazy\Service;
+use Capsule\Di\Lazy\LazyNew;
+use Capsule\Di\Lazy\LazyService;
 
 abstract class AbstractContainer
 {
@@ -82,16 +82,16 @@ abstract class AbstractContainer
         return new Lazy($func, $args);
     }
 
-    protected function create(string $class) : Create
+    protected function new(string $class) : LazyNew
     {
-        return new Create($this->factory, $class);
+        return new LazyNew($this->factory, $class);
     }
 
-    protected function provide(string $class) : Create
+    protected function provide(string $class) : LazyNew
     {
-        $create = $this->create($class);
-        $this->registry->set($class, $create);
-        return $create;
+        $new = $this->new($class);
+        $this->registry->set($class, $new);
+        return $new;
     }
 
     /**
@@ -102,9 +102,9 @@ abstract class AbstractContainer
         $this->registry->set($spec, $lazy);
     }
 
-    protected function service(string $id) : Service
+    protected function service(string $id) : LazyService
     {
-        return new Service($this->registry, $id);
+        return new LazyService($this->registry, $id);
     }
 
     /**
@@ -118,9 +118,9 @@ abstract class AbstractContainer
     /**
      * @return mixed
      */
-    protected function createInstance(string $class, ...$args)
+    protected function newInstance(string $class, ...$args)
     {
-        return $this->factory->get($class, ...$args);
+        return $this->factory->new($class, ...$args);
     }
 
     /**

@@ -18,7 +18,7 @@ class Registry
     /**
      * @param string $id The service ID; often a fully-qualified class name.
      * @param mixed $service The service object iself, or a LazyInterface to
-     * create the service object at `get()` time.
+     * instantiate the service object at `get()` time.
      * @return void
      */
     public function set(string $id, $service)
