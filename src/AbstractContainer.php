@@ -107,9 +107,9 @@ abstract class AbstractContainer
         return new LazyService($this->registry, $id);
     }
 
-    protected function callService($id, $func, ...$args) : Lazy
+    protected function callService($id, $func, ...$args) : LazyCall
     {
-        return $this->lazy([$this->service, $func], $args);
+        return $this->call([$this->service($id), $func], ...$args);
     }
 
     /**

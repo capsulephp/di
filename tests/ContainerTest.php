@@ -139,4 +139,17 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $repeat = $container->serviceInstance('foo');
         $this->assertSame($actual, $repeat);
     }
+
+    public function testCallService()
+    {
+        $container = new FakeContainer();
+        $container->provide(FakeObject::CLASS)->args('val_x');
+
+        $lazy = $container->callService(FakeObject::CLASS, 'foo', 'val_y');
+        $this->assertInstanceOf(LazyCall::CLASS, $lazy);
+
+        $lazy();
+        $actual = $container->serviceInstance(FakeObject::CLASS);
+        $this->assertSame(['val_y', 'foo2'], $actual->foo);
+    }
 }

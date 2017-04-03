@@ -59,11 +59,17 @@ class LazyCall implements LazyInterface
     public function __invoke()
     {
         $func = $this->func;
+
+        if (is_array($func)) {
+            $func = static::resolve($func);
+        }
+
         if (is_string($func) && method_exists($this, "_{$func}")) {
             $func = [$this, "_{$func}"];
         }
 
         $args = static::resolve($this->args);
+
         $result = $func(...$args);
         if (is_array($result)) {
             $result = static::resolve($result);
