@@ -109,7 +109,7 @@ abstract class AbstractContainer
 
     protected function callService($id, $func, ...$args) : LazyCall
     {
-        return $this->call([$this->service($id), $func], ...$args);
+        return new LazyCall([$this->service($id), $func], $args);
     }
 
     /**
