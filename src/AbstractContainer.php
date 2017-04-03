@@ -7,6 +7,7 @@ use Capsule\Di\Lazy\LazyCall;
 use Capsule\Di\Lazy\LazyInterface;
 use Capsule\Di\Lazy\LazyNew;
 use Capsule\Di\Lazy\LazyService;
+use Closure;
 
 abstract class AbstractContainer
 {
@@ -107,7 +108,7 @@ abstract class AbstractContainer
         return new LazyService($this->registry, $id);
     }
 
-    protected function callService($id, $func, ...$args) : LazyCall
+    protected function callService(string $id, $func, ...$args) : LazyCall
     {
         return new LazyCall([$this->service($id), $func], $args);
     }
@@ -120,12 +121,20 @@ abstract class AbstractContainer
         $this->factory->alias($from, $to);
     }
 
+    public function closure(string $func, ...$args) : Closure
+    {
+        $self = $this;
+        return function () use ($self, $func, $args) {
+            return $self->$func(...$args);
+        };
+    }
+
     /**
      * @return mixed
      */
     protected function newInstance(string $class, ...$args)
     {
-        return $this->factory->new($class, ...$args);
+        return $this->factory->new($class, $args);
     }
 
     /**
