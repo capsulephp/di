@@ -58,14 +58,14 @@ class Factory
             $class = $this->aliases[$class];
         }
 
-        // this check allows us to avoid the work of creating implicit defaults
+        // this check allows us to avoid the work of building implicit defaults
         // when an explicit default is already available
         if (! isset($this->defaults[$class])) {
             $this->defaults[$class] = $this->autoDefault($class);
         }
 
         $default = $this->default($class);
-        $instance = $this->newInstance($default, $class, $args);
+        $instance = $this->instantiate($default, $class, $args);
 
         $calls = array_merge($default->getCalls(), $calls);
         foreach ($calls as $call) {
@@ -80,30 +80,30 @@ class Factory
     /**
      * @return mixed
      */
-    protected function newInstance(Config $default, string $class, array $args)
+    protected function instantiate(Config $default, string $class, array $args)
     {
-        // is there a custom creator?
-        $creator = $default->getCreator();
-        if (! $creator) {
+        // is there a custom factory?
+        $factory = $default->getFactory();
+        if (! $factory) {
             // no, just use `new`
             $args = array_replace($default->getArgs(), $args);
             $args = LazyCall::resolve($args);
             return new $class(...$args);
         }
 
-        // creator might be a lazy object
-        if ($creator instanceof LazyInterface) {
-            $creator = $creator();
+        // factory might be a lazy object
+        if ($factory instanceof LazyInterface) {
+            $factory = $factory();
         }
 
-        // creator might be an array of lazy object and method name
-        if (is_array($creator)) {
-            $creator = LazyCall::resolve($creator);
+        // factory might be an array of lazy object and method name
+        if (is_array($factory)) {
+            $factory = LazyCall::resolve($factory);
         }
 
-        // resolve args and call creator
+        // resolve args and call factory
         $args = LazyCall::resolve($args);
-        return $creator(...$args);
+        return $factory(...$args);
     }
 
     protected function autoDefault(string $class) : Config

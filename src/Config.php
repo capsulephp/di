@@ -18,33 +18,33 @@ class Config
     /**
      * @var mixed
      */
-    private $creator = false;
+    private $factory = false;
 
     public function __debugInfo() : array
     {
         return [
             'args' => $this->args,
             'calls' => $this->calls,
-            'creator' => $this->creator
+            'factory' => $this->factory
         ];
     }
 
     /**
-     * @param mixed $creator A callable to use for creating the configured
+     * @param mixed $factory A callable to use for instantiating the configured
      * class. (It might not be callable at the time it is passed.)
      */
-    public function creator($creator) : self
+    public function factory($factory) : self
     {
-        $this->creator = $creator;
+        $this->factory = $factory;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getCreator()
+    public function getFactory()
     {
-        return $this->creator;
+        return $this->factory;
     }
 
     public function args(...$args) : self
@@ -73,7 +73,7 @@ class Config
     {
         $this->resetArgs();
         $this->resetCalls();
-        $this->resetCreator();
+        $this->resetFactory();
         return $this;
     }
 
@@ -89,9 +89,9 @@ class Config
         return $this;
     }
 
-    public function resetCreator() : self
+    public function resetFactory() : self
     {
-        $this->creator = false;
+        $this->factory = false;
         return $this;
     }
 }

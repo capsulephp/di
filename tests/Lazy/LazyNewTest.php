@@ -17,7 +17,7 @@ class LazyNewTest extends \PHPUnit\Framework\TestCase
             'foo'
         );
 
-        $expect = ['class' => 'foo', 'args' => [], 'calls' => [], 'creator' => false];
+        $expect = ['class' => 'foo', 'args' => [], 'calls' => [], 'factory' => false];
         $actual = $lazy->__debugInfo();
         $this->assertSame($expect, $actual);
     }

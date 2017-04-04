@@ -49,12 +49,12 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(stdClass::CLASS, $actual);
     }
 
-    public function testCustomCreator()
+    public function testCustomFactory()
     {
-        $creator = new stdClassFactory();
+        $custom = new stdClassFactory();
 
         $this->factory->default(stdClass::CLASS)
-            ->creator($creator);
+            ->factory($custom);
 
         $args = [
             'foo',
@@ -67,10 +67,10 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($args, $actual->args);
     }
 
-    public function testLazyCustomCreator()
+    public function testLazyCustomFactory()
     {
         $this->factory->default(stdClass::CLASS)
-            ->creator(
+            ->factory(
                 new LazyCall(function () { return new stdClassFactory(); })
             );
 
@@ -85,10 +85,10 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($args, $actual->args);
     }
 
-    public function testLazyArrayCustomCreator()
+    public function testLazyArrayCustomFactory()
     {
         $this->factory->default(stdClass::CLASS)
-            ->creator([
+            ->factory([
                 new LazyCall(function () { return new stdClassFactory(); }),
                 'new'
             ]);
