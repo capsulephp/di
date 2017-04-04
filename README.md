@@ -276,7 +276,7 @@ This returns a shared service instance from the Capsule. Multiple calls to
 `serviceInstance()` return the same instance.
 
 ```php
-class MyCapsule
+class MyCapsule extends \Capsule\Di\AbstractContainer
 {
     public function getPdo() : PDO
     {
@@ -334,7 +334,7 @@ PSR-11 is a "stringly"-typed interface. The Capsule container does not implement
 it by default, but you can do so easily.
 
 ```php
-class Psr11Capsule implements \Psr\Container\ContainerInterface
+class Psr11Capsule extends \Capsule\Di\AbstractContainer implements \Psr\Container\ContainerInterface
 {
     public function get($id)
     {
