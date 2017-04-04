@@ -8,7 +8,7 @@ methods.
 component, or package level; has no public methods for configuration; and
 encourages typehinted retrieval methods.
 
-This means that you `composer require capsule/dev` into your package, extend
+This means that you `composer require capsule/di` into your package, extend
 the `AbstractContainer` for your library or module, and `init()`-ialize your
 component objects inside that extended container. You then add typehinted
 public methods for object retrieval.
@@ -85,7 +85,7 @@ protected function init()
 Use this to provide a shared instance of a class that will be reused after it is
 instantiated.
 
-By default, the `provide()` method presumes the service `$id` is a class name.
+By default, the `provide()` method presumes the service `$id` is a class name,
 and the shared instance is registered under that class name.
 
 The returned LazyNew object extends Config, so you can further configure the
@@ -175,6 +175,7 @@ protected function init()
         $this->env('DB_PASSWORD')
     );
 }
+```
 
 ### alias(*string* $from, *string* $to) : *void*
 
