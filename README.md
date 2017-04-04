@@ -53,7 +53,7 @@ $capsule = new MyCapsule([
     'DB_PASSWORD' => 'my_pass',
 ]);
 
-$pdo = $capsule->getMyDataMapper(); // instanceof MyDataMapper
+$mapper = $capsule->getMyDataMapper(); // instanceof MyDataMapper
 ```
 
 ## Initialization Methods
