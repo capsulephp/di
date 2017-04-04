@@ -138,10 +138,37 @@ protected function init()
 Use this to specify that a dependency should be the result of a method call to
 a shared service instance.
 
+```php
+protected function init()
+{
+    // ...
+
+    // provide a MapperLocator
+    $this->provide(MapperLocator::CLASS);
+
+    // for the Wiki application service, get the WikiMapper
+    // out of the MapperLocator
+    $this->default(WikiService::CLASS)->args(
+        $this->serviceCall(MapperLocator::CLASS, 'get', WikiMapper::CLASS)
+    );
+}
+```
+
 ### new(*string* $class) : *LazyNew*
 
 Use this to specify that a dependency should be a **new** instance of a class,
 not a shared instance.
+
+```php
+protected function init()
+{
+    // ...
+
+    $this->default(Service::CLASS)->args(
+        $this->new(SupportingObject::CLASS)
+    );
+}
+```
 
 The returned LazyNew object extends Config, so you can further configure the
 object prior to its instantiation, overriding the class defaults.
@@ -152,12 +179,41 @@ Use this to specify that a dependency should be the results of invoking a
 callable, whether an instance method, static method, or function. (The PHP
 keywords `include` and `require` are also supported.)
 
+```php
+protected function init()
+{
+    // ...
+
+    $this->default(Service::CLASS)->args(
+        $this->call('include', '/path/to/file.php')
+    );
+}
+```
+
 ### closure(*string* $func, ...$args) : *\Closure*
 
 This returns a Closure that makes a call to a Capsule container method. It is
 useful for providing new-instance and service-instance callables to other
 containers, locators, registries, and factories. It will not be invoked as a
 lazy-loaded dependency at instantiation time.
+
+
+```php
+protected function init()
+{
+    // ...
+
+    // presuming the the MapperLocator takes an array of callable factories
+    // as its first argument
+    $this->default(MapperLocator::CLASS)->args(
+        [
+            $this->closure('newInstance', ThreadMapper::CLASS),
+            $this->closure('newInstance', AuthorMapperMapper::CLASS),
+            $this->closure('newInstance', ReplyMapper::CLASS),
+        ]
+    );
+}
+```
 
 ### env(*string* $key) : *mixed*
 
