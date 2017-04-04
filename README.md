@@ -241,7 +241,7 @@ requests for `$from` will receive an instance of `$to`.
 This can be useful for specifying default implementations for interfaces.
 
 ```php
-$this->alias('FooInterface', `FooImplementation`);
+$this->alias('FooInterface', 'FooImplementation');
 $instance = $this->newInstance('FooInterface'); // instanceof FooImplementation
 ```
 
