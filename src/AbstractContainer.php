@@ -120,9 +120,8 @@ abstract class AbstractContainer
 
     public function closure(string $func, ...$args) : Closure
     {
-        $self = $this;
-        return function () use ($self, $func, $args) {
-            return $self->$func(...$args);
+        return function () use ($func, $args) {
+            return $this->$func(...$args);
         };
     }
 
