@@ -109,10 +109,10 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($actual, $repeat);
     }
 
-    public function testProvideAsAndService()
+    public function testProvideLazyAndService()
     {
         $container = new FakeContainer();
-        $container->provideAs('foo', $container->new(stdClass::CLASS));
+        $container->provide('foo', $container->new(stdClass::CLASS));
 
         $lazy = $container->service('foo');
         $this->assertInstanceOf(LazyService::CLASS, $lazy);
@@ -126,10 +126,10 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($actual, $repeat);
     }
 
-    public function testProvideAsAndServiceInstance()
+    public function testProvideLazyAndServiceInstance()
     {
         $container = new FakeContainer();
-        $container->provideAs('foo', $container->new(stdClass::CLASS));
+        $container->provide('foo', $container->new(stdClass::CLASS));
 
         $actual = $container->serviceInstance('foo');
         $this->assertInstanceOf(stdClass::CLASS, $actual);

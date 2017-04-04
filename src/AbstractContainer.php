@@ -88,19 +88,16 @@ abstract class AbstractContainer
         return new LazyNew($this->factory, $class);
     }
 
-    protected function provide(string $class) : LazyNew
+    protected function provide(string $spec, LazyInterface $lazy = null) : ?LazyNew
     {
-        $new = $this->new($class);
-        $this->registry->set($class, $new);
-        return $new;
-    }
+        if ($lazy === null) {
+            $new = $this->new($spec);
+            $this->registry->set($spec, $new);
+            return $new;
+        }
 
-    /**
-     * @return void
-     */
-    protected function provideAs(string $spec, LazyInterface $lazy)
-    {
         $this->registry->set($spec, $lazy);
+        return null;
     }
 
     protected function service(string $id) : LazyService
