@@ -31,8 +31,7 @@ class Config
 
     /**
      * @param mixed $creator A callable to use for creating the configured
-     * class, or an empty value (null/false/0/'') to use the standard factory.
-     * @return void
+     * class. (It might not be callable at the time it is passed.)
      */
     public function creator($creator) : self
     {
