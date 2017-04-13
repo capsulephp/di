@@ -1,4 +1,6 @@
-# Capsule
+<div style="text-align: center;">
+  <img style="border: none; width: 128px; height: 128px;" src="https://raw.githubusercontent.com/capsulephp/capsulephp.github.io/master/capsule.png" />
+</div>
 
 Most dependency injection containers work through public configuration, are
 intended for use at the application level, and use "stringly"-typed retrieval
