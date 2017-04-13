@@ -12,6 +12,11 @@ use Closure;
 class Container
 {
     /**
+     * @var array
+     */
+    private $env = [];
+
+    /**
      * @var Factory
      */
     private $factory;
@@ -20,28 +25,6 @@ class Container
      * @var Registry
      */
     private $registry;
-
-    /**
-     * @var array
-     */
-    private $env = [];
-
-    /**
-     * @return void
-     */
-    final protected function setEnv(array $env)
-    {
-        $this->env = [];
-        $this->addEnv($env);
-    }
-
-    /**
-     * @return void
-     */
-    final protected function addEnv(array $env)
-    {
-        $this->env = array_replace($this->env, $env);
-    }
 
     final protected function getFactory() : Factory
     {
@@ -59,6 +42,23 @@ class Container
         }
 
         return $this->registry;
+    }
+
+    /**
+     * @return void
+     */
+    final protected function setEnv(array $env)
+    {
+        $this->env = [];
+        $this->addEnv($env);
+    }
+
+    /**
+     * @return void
+     */
+    final protected function addEnv(array $env)
+    {
+        $this->env = array_replace($this->env, $env);
     }
 
     /**
