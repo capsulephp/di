@@ -5,9 +5,9 @@ namespace Capsule\Di;
 
 class FakeContainer extends AbstractContainer
 {
-    protected function init()
+    public function __construct(array $env = [])
     {
-        parent::init();
+        $this->setEnv($env);
         parent::getRegistry()->set('fakeInit', new FakeObject('init1'));
     }
 

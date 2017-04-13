@@ -26,35 +26,44 @@ abstract class AbstractContainer
      */
     private $env = [];
 
-    public function __construct(array $env = [])
+    /**
+     * @return void
+     */
+    final protected function setEnv(array $env)
     {
         $this->env = $env;
-        $this->registry = new Registry();
-        $this->factory = new Factory($this->registry);
-        $this->init();
     }
 
     /**
      * @return void
      */
-    protected function init()
+    final protected function addEnv(array $env)
     {
+        $this->env = array_replace($this->env, $env);
     }
 
-    protected function getFactory() : Factory
+    final protected function getFactory() : Factory
     {
+        if (! isset($this->factory)) {
+            $this->factory = new Factory($this->getRegistry());
+        }
+
         return $this->factory;
     }
 
-    protected function getRegistry() : Registry
+    final protected function getRegistry() : Registry
     {
+        if (! isset($this->registry)) {
+            $this->registry = new Registry();
+        }
+
         return $this->registry;
     }
 
     /**
      * @return mixed
      */
-    protected function env(string $key)
+    final protected function env(string $key)
     {
         if (array_key_exists($key, $this->env)) {
             return $this->env[$key];
@@ -68,9 +77,9 @@ abstract class AbstractContainer
         return null;
     }
 
-    protected function default(string $class) : Config
+    final protected function default(string $class) : Config
     {
-        return $this->factory->default($class);
+        return $this->getFactory()->default($class);
     }
 
     /**
@@ -78,34 +87,34 @@ abstract class AbstractContainer
      * 'require' as well.
      * @param array ...$args Arguments to pass to $func.
      */
-    protected function call($func, ...$args) : LazyCall
+    final protected function call($func, ...$args) : LazyCall
     {
         return new LazyCall($func, $args);
     }
 
-    protected function new(string $class) : LazyNew
+    final protected function new(string $class) : LazyNew
     {
-        return new LazyNew($this->factory, $class);
+        return new LazyNew($this->getFactory(), $class);
     }
 
-    protected function provide(string $spec, LazyInterface $lazy = null) : ?LazyNew
+    final protected function provide(string $spec, LazyInterface $lazy = null) : ?LazyNew
     {
         if ($lazy === null) {
             $new = $this->new($spec);
-            $this->registry->set($spec, $new);
+            $this->getRegistry()->set($spec, $new);
             return $new;
         }
 
-        $this->registry->set($spec, $lazy);
+        $this->getRegistry()->set($spec, $lazy);
         return null;
     }
 
-    protected function service(string $id) : LazyService
+    final protected function service(string $id) : LazyService
     {
         return new LazyService($this->registry, $id);
     }
 
-    protected function serviceCall(string $id, $func, ...$args) : LazyCall
+    final protected function serviceCall(string $id, $func, ...$args) : LazyCall
     {
         return new LazyCall([$this->service($id), $func], $args);
     }
@@ -113,12 +122,12 @@ abstract class AbstractContainer
     /**
      * @return void
      */
-    protected function alias(string $from, string $to)
+    final protected function alias(string $from, string $to)
     {
-        $this->factory->alias($from, $to);
+        $this->getFactory()->alias($from, $to);
     }
 
-    public function closure(string $func, ...$args) : Closure
+    final protected function closure(string $func, ...$args) : Closure
     {
         return function () use ($func, $args) {
             return $this->$func(...$args);
@@ -128,16 +137,16 @@ abstract class AbstractContainer
     /**
      * @return mixed
      */
-    protected function newInstance(string $class, ...$args)
+    final protected function newInstance(string $class, ...$args)
     {
-        return $this->factory->new($class, $args);
+        return $this->getFactory()->new($class, $args);
     }
 
     /**
      * @return mixed
      */
-    protected function serviceInstance(string $id)
+    final protected function serviceInstance(string $id)
     {
-        return $this->registry->get($id);
+        return $this->getRegistry()->get($id);
     }
 }
