@@ -8,10 +8,11 @@ methods.
 component, or package level; has no public methods for configuration; and
 encourages typehinted retrieval methods.
 
-This means that you `composer require capsule/di` into your package, extend
-the `AbstractContainer` for your library or module, and `init()`-ialize your
-component objects inside that extended container. You then add typehinted
-public methods for object retrieval.
+This means that you
+[`composer require capsule/di ~1.0`](https://packagist.org/packages/capsule/di)
+into your package, extend the `Container` for your library or module,
+and `__construct()` your component objects inside that extended container. You
+then add typehinted public methods for object retrieval.
 
 ## An Example
 
@@ -19,20 +20,21 @@ The following container provides a shared instance of a hypothetical data mapper
 using a shared instance of PDO.
 
 ```php
-class MyCapsule extends \Capsule\Di\AbstractContainer
+<?php
+class MyCapsule extends \Capsule\Di\Container
 {
-    protected function init()
+    public function __construct(array $env = [])
     {
-        parent::init();
+        $this->setEnv($env);
 
-        $this->provide(\PDO::CLASS)->args(
+        $this->provide(PDO::CLASS)->args(
             $this->env('DB_DSN'),
             $this->env('DB_USERNAME'),
             $this->env('DB_PASSWORD')
         );
 
         $this->provide(MyDataMapper::CLASS)->args(
-            $this->service(\PDO::CLASS)
+            $this->service(PDO::CLASS)
         );
     }
 
@@ -69,7 +71,8 @@ particular class.  All object instantiations will use this configuration by
 default.
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
     $this->default(Foo::CLASS)->args(
@@ -92,7 +95,8 @@ The returned LazyNew object extends Config, so you can further configure the
 object prior to its instantiation, overriding the class defaults.
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -123,7 +127,8 @@ Use this to specify that a dependency should should be a shared service instance
 registered using `provide()`. (The service instance may not be defined yet.)
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -139,7 +144,8 @@ Use this to specify that a dependency should be the result of a method call to
 a shared service instance.
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -160,7 +166,8 @@ Use this to specify that a dependency should be a **new** instance of a class,
 not a shared instance.
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -180,7 +187,8 @@ callable, whether an instance method, static method, or function. (The PHP
 keywords `include` and `require` are also supported.)
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -199,7 +207,8 @@ lazy-loaded dependency at instantiation time.
 
 
 ```php
-protected function init()
+<?php
+public function __construct()
 {
     // ...
 
@@ -217,21 +226,33 @@ protected function init()
 
 ### env(*string* $key) : *mixed*
 
-Returns the value of the `$env[$key]` property (if it is set), then the value of
-`getenv($id)` (if it is not `false`), and then `null`. (The `$env` property
-values are populated at `__construct()` time.)
+Returns the value of the container-specific `$env[$key]` property (if set), then
+the value of `getenv($id)` (if not `false`), and then `null`.
 
 ```php
-protected function init()
+<?php
+public function __construct(array $env = [])
 {
+    $this->setEnv($env);
+
     // ...
-    $this->provide(\PDO::CLASS)->args(
+
+    $this->provide(PDO::CLASS)->args(
         $this->env('DB_DSN'),
         $this->env('DB_USERNAME'),
         $this->env('DB_PASSWORD')
     );
 }
 ```
+
+The above will use `$env['DB_DSN']` (et al.) if they are passed to the
+constructor, and fall back to `getenv('DB_DSN')` if they are not.
+
+To set or replace all container-specific environment values, call
+`setEnv(array $env)`.
+
+To merge new values with existing container-specific environment values, call
+`addEnv(array $env)`.
 
 ### alias(*string* $from, *string* $to) : *void*
 
@@ -241,8 +262,12 @@ requests for `$from` will receive an instance of `$to`.
 This can be useful for specifying default implementations for interfaces.
 
 ```php
-$this->alias('FooInterface', 'FooImplementation');
-$instance = $this->newInstance('FooInterface'); // instanceof FooImplementation
+<?php
+public function __construct()
+{
+    $this->alias('FooInterface', 'FooImplementation');
+    $instance = $this->newInstance('FooInterface'); // instanceof FooImplementation
+}
 ```
 
 ## Kickoff Methods
@@ -261,7 +286,8 @@ that override the default for that class. Multiple calls to `newInstance()`
 return different new instances.
 
 ```php
-class MyCapsule extends \Capsule\Di\AbstractContainer
+<?php
+class MyCapsule extends \Capsule\Di\Container
 {
     public function newPdo() : PDO
     {
@@ -276,7 +302,8 @@ This returns a shared service instance from the Capsule. Multiple calls to
 `serviceInstance()` return the same instance.
 
 ```php
-class MyCapsule extends \Capsule\Di\AbstractContainer
+<?php
+class MyCapsule extends \Capsule\Di\Container
 {
     public function getPdo() : PDO
     {
@@ -334,7 +361,10 @@ PSR-11 is a "stringly"-typed interface. The Capsule container does not implement
 it by default, but you can do so easily.
 
 ```php
-class Psr11Capsule extends \Capsule\Di\AbstractContainer implements \Psr\Container\ContainerInterface
+<?php
+class Psr11Capsule
+extends \Capsule\Di\Container
+implements \Psr\Container\ContainerInterface
 {
     public function get($id)
     {

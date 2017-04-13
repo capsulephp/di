@@ -150,4 +150,14 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $actual = $container->serviceInstance(FakeObject::CLASS);
         $this->assertSame(['val_y', 'foo2'], $actual->foo);
     }
+
+    public function testClosure()
+    {
+        $container = new FakeContainer();
+        $closure = $container->closure('newInstance', FakeObject::CLASS, 'foo');
+        $this->assertInstanceOf(\Closure::CLASS, $closure);
+        $actual = $closure();
+        $this->assertInstanceOf(FakeObject::CLASS, $actual);
+        $this->assertSame('foo', $actual->arg1);
+    }
 }

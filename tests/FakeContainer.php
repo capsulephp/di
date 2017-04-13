@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-class FakeContainer extends AbstractContainer
+class FakeContainer extends Container
 {
     public function __construct(array $env = [])
     {

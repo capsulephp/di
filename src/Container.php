@@ -9,7 +9,7 @@ use Capsule\Di\Lazy\LazyNew;
 use Capsule\Di\Lazy\LazyService;
 use Closure;
 
-abstract class AbstractContainer
+class Container
 {
     /**
      * @var Factory
@@ -31,7 +31,8 @@ abstract class AbstractContainer
      */
     final protected function setEnv(array $env)
     {
-        $this->env = $env;
+        $this->env = [];
+        $this->addEnv($env);
     }
 
     /**
