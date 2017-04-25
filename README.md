@@ -60,7 +60,7 @@ $mapper = $capsule->getMyDataMapper(); // instanceof MyDataMapper
 
 ## Initialization Methods
 
-Call these methods within `init()` to configure the container. Note that
+Call these methods within `__construct()` to configure the container. Note that
 they are all protected; they cannot be called from outside the container.
 
 ### default(*string* $class) : *Config*
