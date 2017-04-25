@@ -123,7 +123,7 @@ will return `null`.
 
 ### service(*string* $id) : *LazyService*
 
-Use this to specify that a dependency should should be a shared service instance
+Use this to specify that a dependency should be a shared service instance
 registered using `provide()`. (The service instance may not be defined yet.)
 
 ```php
@@ -217,7 +217,7 @@ public function __construct()
     $this->default(MapperLocator::CLASS)->args(
         [
             $this->closure('newInstance', ThreadMapper::CLASS),
-            $this->closure('newInstance', AuthorMapperMapper::CLASS),
+            $this->closure('newInstance', AuthorMapper::CLASS),
             $this->closure('newInstance', ReplyMapper::CLASS),
         ]
     );
