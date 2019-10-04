@@ -1,6 +1,4 @@
-<div style="text-align: center;">
-  <img style="border: none; width: 128px; height: 128px;" src="https://raw.githubusercontent.com/capsulephp/capsulephp.github.io/master/capsule.png" />
-</div>
+# Capsule
 
 Most dependency injection containers work through public configuration, are
 intended for use at the application level, and use "stringly"-typed retrieval
@@ -62,7 +60,7 @@ $mapper = $capsule->getMyDataMapper(); // instanceof MyDataMapper
 
 ## Initialization Methods
 
-Call these methods within `init()` to configure the container. Note that
+Call these methods within `__construct()` to configure the container. Note that
 they are all protected; they cannot be called from outside the container.
 
 ### default(*string* $class) : *Config*
@@ -125,7 +123,7 @@ will return `null`.
 
 ### service(*string* $id) : *LazyService*
 
-Use this to specify that a dependency should should be a shared service instance
+Use this to specify that a dependency should be a shared service instance
 registered using `provide()`. (The service instance may not be defined yet.)
 
 ```php
@@ -219,7 +217,7 @@ public function __construct()
     $this->default(MapperLocator::CLASS)->args(
         [
             $this->closure('newInstance', ThreadMapper::CLASS),
-            $this->closure('newInstance', AuthorMapperMapper::CLASS),
+            $this->closure('newInstance', AuthorMapper::CLASS),
             $this->closure('newInstance', ReplyMapper::CLASS),
         ]
     );
