@@ -387,3 +387,6 @@ TBD.
 ## Providing To Other Containers
 
 TBD.
+
+Note that you can wrap it in a closure or other lazy-loader so that it does
+not get created until it is called.
