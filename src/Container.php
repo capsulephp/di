@@ -44,19 +44,13 @@ class Container
         return $this->registry;
     }
 
-    /**
-     * @return void
-     */
-    final protected function setEnv(array $env)
+    final protected function setEnv(array $env) : void
     {
         $this->env = [];
         $this->addEnv($env);
     }
 
-    /**
-     * @return void
-     */
-    final protected function addEnv(array $env)
+    final protected function addEnv(array $env) : void
     {
         $this->env = array_replace($this->env, $env);
     }
@@ -120,10 +114,7 @@ class Container
         return new LazyCall([$this->service($id), $func], $args);
     }
 
-    /**
-     * @return void
-     */
-    final protected function alias(string $from, string $to)
+    final protected function alias(string $from, string $to) : void
     {
         $this->getFactory()->alias($from, $to);
     }
