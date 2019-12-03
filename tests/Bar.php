@@ -5,14 +5,13 @@ namespace Capsule\Di;
 
 use stdClass;
 
-class FakeAuto
+class Bar
 {
     public function __construct(
         stdClass $arg0,
-        FakeObject $arg1,
-        $arg2 = 'default_value',
-        $arg3 // no default value
+        Foo $arg1,
+        $arg2 = 'default_value'
     ) {
-
+        // ...
     }
 }

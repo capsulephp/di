@@ -3,142 +3,64 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\LazyCall;
 use Capsule\Di\Lazy\LazyInterface;
-use Capsule\Di\Lazy\LazyNew;
-use Capsule\Di\Lazy\LazyService;
-use Closure;
+use Psr\Container\ContainerInterface;
 
-class Container
+class Container implements ContainerInterface
 {
-    /**
-     * @var array
-     */
-    private $env = [];
+    protected $definitions;
 
-    /**
-     * @var Factory
-     */
-    private $factory;
+    protected $instances = [];
 
-    /**
-     * @var Registry
-     */
-    private $registry;
-
-    final protected function getFactory() : Factory
+    public function __construct(?Definitions $definitions = null)
     {
-        if (! isset($this->factory)) {
-            $this->factory = new Factory($this->getRegistry());
+        if ($definitions === null) {
+            $definitions = new Definitions();
+        }
+        $this->definitions = $definitions;
+        $this->instances[static::CLASS] = $this;
+    }
+
+    public function get($id)
+    {
+        if (! isset($this->instances[$id])) {
+            $this->instances[$id] = $this->new($id);
         }
 
-        return $this->factory;
+        return $this->instances[$id];
     }
 
-    final protected function getRegistry() : Registry
+    public function has(/* string */ $id) /* : bool */
     {
-        if (! isset($this->registry)) {
-            $this->registry = new Registry();
+        return $this->definitions->has($id);
+    }
+
+    public function new(string $id)
+    {
+        if (! $this->definitions->has($id)) {
+            throw new NotFoundException($id);
         }
 
-        return $this->registry;
-    }
+        $spec = $this->definitions->get($id);
 
-    final protected function setEnv(array $env) : void
-    {
-        $this->env = [];
-        $this->addEnv($env);
-    }
-
-    final protected function addEnv(array $env) : void
-    {
-        $this->env = array_replace($this->env, $env);
-    }
-
-    /**
-     * @return mixed
-     */
-    final protected function env(string $key)
-    {
-        if (array_key_exists($key, $this->env)) {
-            return $this->env[$key];
+        if ($spec instanceof Definition) {
+            return $spec->new($this);
         }
 
-        $val = getenv($key);
-        if ($val !== false) {
-            return $val;
-        }
-
-        return null;
+        return $spec;
     }
 
-    final protected function default(string $class) : Config
+    public function callableGet(string $id) : callable
     {
-        return $this->getFactory()->default($class);
-    }
-
-    /**
-     * @param mixed $func Nominally a callable, but might be 'include' or
-     * 'require' as well.
-     * @param array ...$args Arguments to pass to $func.
-     */
-    final protected function call($func, ...$args) : LazyCall
-    {
-        return new LazyCall($func, $args);
-    }
-
-    final protected function new(string $class) : LazyNew
-    {
-        return new LazyNew($this->getFactory(), $class);
-    }
-
-    final protected function provide(string $spec, LazyInterface $lazy = null) : ?LazyNew
-    {
-        if ($lazy === null) {
-            $new = $this->new($spec);
-            $this->getRegistry()->set($spec, $new);
-            return $new;
-        }
-
-        $this->getRegistry()->set($spec, $lazy);
-        return null;
-    }
-
-    final protected function service(string $id) : LazyService
-    {
-        return new LazyService($this->registry, $id);
-    }
-
-    final protected function serviceCall(string $id, $func, ...$args) : LazyCall
-    {
-        return new LazyCall([$this->service($id), $func], $args);
-    }
-
-    final protected function alias(string $from, string $to) : void
-    {
-        $this->getFactory()->alias($from, $to);
-    }
-
-    final protected function closure(string $func, ...$args) : Closure
-    {
-        return function () use ($func, $args) {
-            return $this->$func(...$args);
+        return function () use ($id) {
+            return $this->get($id);
         };
     }
 
-    /**
-     * @return mixed
-     */
-    final protected function newInstance(string $class, ...$args)
+    public function callableNew(string $id) : callable
     {
-        return $this->getFactory()->new($class, $args);
-    }
-
-    /**
-     * @return mixed
-     */
-    final protected function serviceInstance(string $id)
-    {
-        return $this->getRegistry()->get($id);
+        return function () use ($id) {
+            return $this->new($id);
+        };
     }
 }

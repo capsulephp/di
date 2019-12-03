@@ -5,17 +5,17 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Container;
 
-class LazyNew implements LazyInterface
+class LazyRequire implements LazyInterface
 {
-    protected $id;
+    protected $file;
 
-    public function __construct(string $id)
+    public function __construct(string $file)
     {
-        $this->id = $id;
+        $this->file = $file;
     }
 
     public function __invoke(Container $container) /* : mixed */
     {
-        return $container->new($this->id);
+        return require $this->file;
     }
 }

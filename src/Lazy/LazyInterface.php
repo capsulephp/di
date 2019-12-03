@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Capsule\Di\Lazy;
 
+use Capsule\Di\Container;
+
 interface LazyInterface
 {
-    /**
-     * @return mixed
-     */
-    public function __invoke();
+    public function __invoke(Container $container);
 }

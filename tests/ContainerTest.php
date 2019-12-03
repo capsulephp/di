@@ -3,161 +3,156 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\LazyCall;
-use Capsule\Di\Lazy\LazyNew;
-use Capsule\Di\Lazy\LazyService;
 use stdClass;
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     public function testGet()
     {
-        $container = new FakeContainer();
-        $this->assertInstanceOf(Factory::CLASS, $container->getFactory());
-        $this->assertInstanceOf(Registry::CLASS, $container->getRegistry());
+        $container = new Container();
+        $expect = $container->get(stdClass::CLASS);
+        $actual = $container->get(stdClass::CLASS);
+        $this->assertSame($expect, $actual);
     }
 
-    public function testInit()
+    public function testNew_withConstructor_numberedArgument()
     {
-        $container = new FakeContainer();
-        $actual = $container->getRegistry()->get('fakeInit');
-        $this->assertInstanceOf(FakeObject::CLASS, $actual);
+        $define = new Definitions();
+        $define(Foo::CLASS)->argument(0, 'foo');
+
+        $container = $define->newContainer();
+        $actual = $container->new(Foo::CLASS);
+        $this->assertInstanceOf(Foo::CLASS, $actual);
     }
 
-    public function testEnv()
+    public function testNew_withConstructor_namedArgument()
     {
-        putenv('GLOBAL_KEY_1=GLOBAL_VAL_1');
-        putenv('GLOBAL_KEY_2=GLOBAL_VAL_2');
+        $define = new Definitions();
+        $define(Foo::CLASS)->argument('arg1', 'foo');
 
-        $container = new FakeContainer([
-            'localKey1' => 'localVal1',
-            'GLOBAL_KEY_2' => 'localVal2'
+        $container = $define->newContainer();
+        $actual = $container->new(Foo::CLASS);
+        $this->assertInstanceOf(Foo::CLASS, $actual);
+    }
+
+    public function testNew_withConstructor_missingArgument()
+    {
+        $container = new Container();
+        $this->expectException(Exception::CLASS);
+        $this->expectExceptionMessage(
+            'No constructor argument available for Capsule\Di\Foo::$arg1'
+        );
+        $container->new(Foo::CLASS);
+    }
+
+    public function testNew_withFactory()
+    {
+        $define = new Definitions();
+        $define(Foo::CLASS)->factory(function ($container) {
+            return new stdClass();
+        });
+        $container = $define->newContainer();
+        $actual = $container->new(Foo::CLASS);
+        $this->assertInstanceOf(stdClass::CLASS, $actual);
+    }
+
+    public function testNew_withoutConstructor()
+    {
+        $container = new Container();
+        $expect = $container->new(stdClass::CLASS);
+        $actual = $container->new(stdClass::CLASS);
+        $this->assertNotSame($expect, $actual);
+    }
+
+    public function testNew_noSuchClass_early()
+    {
+        $define = new Definitions();
+        $this->expectException(NotFoundException::CLASS);
+        $this->expectExceptionMessage('NoSuchClass');
+        $define->object('NoSuchClass');
+    }
+
+    public function testNew_noSuchClass_late()
+    {
+        $container = new Container();
+        $this->expectException(NotFoundException::CLASS);
+        $this->expectExceptionMessage('NoSuchClass');
+        $container->get('NoSuchClass');
+    }
+
+    public function testNew_withTypehint()
+    {
+        $define = new Definitions();
+        $define(Foo::CLASS)->arguments(['foo']);
+
+        $container = $define->newContainer();
+        $actual = $container->new(Bar::CLASS);
+        $this->assertInstanceOf(Bar::CLASS, $actual);
+    }
+
+    public function testNew_withModifiers()
+    {
+        $define = new Definitions();
+        $define(Foo::CLASS)
+            ->arguments(['foo'])
+            ->method('append', 'bar')
+            ->method('append', 'baz');
+
+        $container = $define->newContainer();
+        $actual = $container->new(Foo::CLASS);
+        $this->assertInstanceOf(Foo::CLASS, $actual);
+        $this->assertSame('foobarbaz', $actual->arg1);
+    }
+
+    public function testNew_withLazy()
+    {
+        $define = new Definitions();
+        $define(Foo::CLASS)->arguments([
+            'foo',
+            Lazy::call(function ($container) {
+                return 'bar';
+            }),
         ]);
-
-        $this->assertSame('GLOBAL_VAL_1', $container->env('GLOBAL_KEY_1'));
-        $this->assertSame('localVal1', $container->env('localKey1'));
-        $this->assertSame('localVal2', $container->env('GLOBAL_KEY_2'));
-        $this->assertNull($container->env('no-such-key'));
+        $container = $define->newContainer();
+        $actual = $container->new(Foo::CLASS);
+        $this->assertInstanceOf(Foo::CLASS, $actual);
     }
 
-    public function testCall()
+    public function testHas()
     {
-        $container = new FakeContainer();
-        $lazy = $container->call('include', 'include_file.php');
-        $this->assertInstanceOf(LazyCall::CLASS, $lazy);
+        $define = new Definitions();
+        $define(Baz::CLASS)->factory(function ($container) { });
+        $container = $define->newContainer();
+
+        $this->assertTrue($container->has(stdClass::CLASS));
+        $this->assertTrue($container->has(Baz::CLASS));
+        $this->assertFalse($container->has('NoSuchClass'));
     }
 
-    public function testDefault()
+    public function testCallableGet()
     {
-        $container = new FakeContainer();
-        $default = $container->default(stdClass::CLASS);
-        $this->assertInstanceOf(Config::CLASS, $default);
-        $repeat = $container->default(stdClass::CLASS);
-        $this->assertSame($default, $repeat);
+        $container = new Container();
+        $callable = $container->callableGet(stdClass::CLASS);
+        $expect = $callable(stdClass::CLASS);
+        $actual = $callable(stdClass::CLASS);
+        $this->assertSame($expect, $actual);
     }
 
-    public function testNew()
+    public function testCallableNew()
     {
-        $container = new FakeContainer();
-        $lazy = $container->new(stdClass::CLASS);
-        $this->assertInstanceOf(LazyNew::CLASS, $lazy);
-        $instance = $lazy();
-        $this->assertInstanceOf(stdClass::CLASS, $instance);
+        $container = new Container();
+        $callable = $container->callableNew(stdClass::CLASS);
+        $expect = $callable(stdClass::CLASS);
+        $actual = $callable(stdClass::CLASS);
+        $this->assertNotSame($expect, $actual);
     }
 
-    public function testNewInstance()
+    public function testValue()
     {
-        $container = new FakeContainer();
-        $instance = $container->newInstance(stdClass::CLASS);
-        $this->assertInstanceOf(stdClass::CLASS, $instance);
-    }
-
-    public function testAlias()
-    {
-        $container = new FakeContainer();
-        $container->alias(FakeObject::CLASS, stdClass::CLASS);
-        $actual = $container->newInstance(FakeObject::CLASS);
-        $this->assertInstanceOf(stdClass::CLASS, $actual);
-    }
-
-    public function testProvideClassAndService()
-    {
-        $container = new FakeContainer();
-        $container->provide(stdClass::CLASS);
-
-        $lazy = $container->service(stdClass::CLASS);
-        $this->assertInstanceOf(LazyService::CLASS, $lazy);
-        $actual = $lazy();
-        $this->assertInstanceOf(stdClass::CLASS, $actual);
-
-        $repeat = $lazy();
-        $this->assertSame($actual, $repeat);
-
-        $repeat = $container->service(stdClass::CLASS)();
-        $this->assertSame($actual, $repeat);
-    }
-
-    public function testProvideClassAndServiceInstance()
-    {
-        $container = new FakeContainer();
-        $container->provide(stdClass::CLASS);
-
-        $actual = $container->serviceInstance(stdClass::CLASS);
-        $this->assertInstanceOf(stdClass::CLASS, $actual);
-
-        $repeat = $container->serviceInstance(stdClass::CLASS);
-        $this->assertSame($actual, $repeat);
-    }
-
-    public function testProvideLazyAndService()
-    {
-        $container = new FakeContainer();
-        $container->provide('foo', $container->new(stdClass::CLASS));
-
-        $lazy = $container->service('foo');
-        $this->assertInstanceOf(LazyService::CLASS, $lazy);
-        $actual = $lazy();
-        $this->assertInstanceOf(stdClass::CLASS, $actual);
-
-        $repeat = $lazy();
-        $this->assertSame($actual, $repeat);
-
-        $repeat = $container->service('foo')();
-        $this->assertSame($actual, $repeat);
-    }
-
-    public function testProvideLazyAndServiceInstance()
-    {
-        $container = new FakeContainer();
-        $container->provide('foo', $container->new(stdClass::CLASS));
-
-        $actual = $container->serviceInstance('foo');
-        $this->assertInstanceOf(stdClass::CLASS, $actual);
-
-        $repeat = $container->serviceInstance('foo');
-        $this->assertSame($actual, $repeat);
-    }
-
-    public function testServiceCall()
-    {
-        $container = new FakeContainer();
-        $container->provide(FakeObject::CLASS)->args('val_x');
-
-        $lazy = $container->serviceCall(FakeObject::CLASS, 'foo', 'val_y');
-        $this->assertInstanceOf(LazyCall::CLASS, $lazy);
-
-        $lazy();
-        $actual = $container->serviceInstance(FakeObject::CLASS);
-        $this->assertSame(['val_y', 'foo2'], $actual->foo);
-    }
-
-    public function testClosure()
-    {
-        $container = new FakeContainer();
-        $closure = $container->closure('newInstance', FakeObject::CLASS, 'foo');
-        $this->assertInstanceOf(\Closure::CLASS, $closure);
-        $actual = $closure();
-        $this->assertInstanceOf(FakeObject::CLASS, $actual);
-        $this->assertSame('foo', $actual->arg1);
+        $define = new Definitions();
+        $define->value('foo', 'bar');
+        $container = $define->newContainer();
+        $actual = $container->get('foo');
+        $this->assertSame('bar', $actual);
     }
 }

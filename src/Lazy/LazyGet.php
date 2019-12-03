@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Container;
 
-class LazyNew implements LazyInterface
+class LazyGet implements LazyInterface
 {
     protected $id;
 
@@ -16,6 +16,6 @@ class LazyNew implements LazyInterface
 
     public function __invoke(Container $container) /* : mixed */
     {
-        return $container->new($this->id);
+        return $container->get($this->id);
     }
 }

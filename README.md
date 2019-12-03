@@ -1,390 +1,414 @@
 # Capsule
 
-Most dependency injection containers work through public configuration, are
-intended for use at the application level, and use "stringly"-typed retrieval
-methods.
+A [PSR-11](https://www.php-fig.org/psr/psr-11/) compliant autowiring dependency
+injection container with class-based configuration of constructor arguments and
+initialization methods, and lazy evaluation of arguments. Intended primarily for
+objects, the container also makes allowance for storing non-object values.
 
-**Capsule**, on the other hand, is intended for use at the library, module,
-component, or package level; has no public methods for configuration; and
-encourages typehinted retrieval methods.
-
-This means that you
-[`composer require capsule/di ~1.0`](https://packagist.org/packages/capsule/di)
-into your package, extend the `Container` for your library or module,
-and `__construct()` your component objects inside that extended container. You
-then add typehinted public methods for object retrieval.
-
-## An Example
+## Example
 
 The following container provides a shared instance of a hypothetical data mapper
 using a shared instance of PDO.
 
 ```php
-<?php
-class MyCapsule extends \Capsule\Di\Container
+use Capsule\Di\Definitions;
+use Capsule\Di\Lazy;
+
+class DataMapper
 {
-    public function __construct(array $env = [])
+    public function __construct(PDO $pdo)
     {
-        $this->setEnv($env);
-
-        $this->provide(PDO::CLASS)->args(
-            $this->env('DB_DSN'),
-            $this->env('DB_USERNAME'),
-            $this->env('DB_PASSWORD')
-        );
-
-        $this->provide(MyDataMapper::CLASS)->args(
-            $this->service(PDO::CLASS)
-        );
-    }
-
-    public function getMyDataMapper() : MyDataMapper
-    {
-        return $this->serviceInstance(MyDataMapper::CLASS);
+        $this->pdo = $pdo;
     }
 }
 
-class MyDataMapper
-{
-    public function __construct(PDO $pdo) { ... }
-}
+$def = new Definitions();
 
-$capsule = new MyCapsule([
-    'DB_DSN' => 'mysql:host=localhost;dbname=mydb',
-    'DB_USERNAME' => 'my_user',
-    'DB_PASSWORD' => 'my_pass',
-]);
+$def->object(PDO::CLASS)
+    ->arguments([
+        Lazy::env('PDO_DSN'),
+        Lazy::env('PDO_USERNAME'),
+        Lazy::env('PDO_PASSWORD')
+    ]);
 
-$mapper = $capsule->getMyDataMapper(); // instanceof MyDataMapper
+$container = $def->newContainer();
+
+$dataMapper = $container->get(DataMapper::CLASS);
 ```
 
-## Initialization Methods
+## Container Methods
 
-Call these methods within `__construct()` to configure the container. Note that
-they are all protected; they cannot be called from outside the container.
+> N.b.: If you use PHPStorm, you can copy the `resources/phpstorm.meta.php`
+> file to your project root as `.phpstorm.meta.php` for autocompletion on
+> `get()` and `new()` method calls.
 
-### default(*string* $class) : *Config*
+### get(*string* $id) : *mixed*
 
-Returns a Config object (see below) so you can set the default constructor
-arguments, post-instantiation method calls, and instantiation factory for a
-particular class.  All object instantiations will use this configuration by
-default.
+Returns a shared instance of the specified entry class, or the entry value.
+Multiple calls to `get()` return the same object instance.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
-    $this->default(Foo::CLASS)->args(
-        'foo',
-        'bar',
-        'baz',
-    );
-}
+$foo1 = $container->get(Foo::CLASS);
+$foo2 = $container->get(Foo::CLASS);
+var_dump($foo1 === $foo2); // bool(true)
 ```
 
-### provide(*string* $id, *LazyInterface* $lazy = null) : *?LazyNew*
+### has(*string* $id) : *bool*
 
-Use this to provide a shared instance of a class that will be reused after it is
-instantiated.
-
-By default, the `provide()` method presumes the service `$id` is a class name,
-and the shared instance is registered under that class name.
-
-The returned LazyNew object extends Config, so you can further configure the
-object prior to its instantiation, overriding the class defaults.
+Returns `true` if the Container has an `$id` entry, or if the `$id` is an
+existing class; otherwise, `false`.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
-
-    // uses default arguments
-    $this->provide(Foo::CLASS);
-
-    // overrides default arguments
-    $this->provide(Bar::CLASS)->args(
-        'zim',
-        'dib',
-        'gir',
-    );
-}
+$container->has(stdClass::CLASS); // true
+$container->has('NoSuchClass'); // false
 ```
 
-Use this to provide a shared instance of a class that will be reused after it is
-instantiated. The shared instance is registered under the `$id`, which may be
-any class name or any other identifying string.
+### new(*string* $id) : *mixed*
 
-If you pass a `$lazy` argument to `provide()`, the `$lazy` will be used to
-create the service instance, in which case the `$id` may or may not match the
-class of the lazy-loaded instance. When passing an explicit `$lazy`, `provide()`
-will return `null`.
-
-### service(*string* $id) : *LazyService*
-
-Use this to specify that a dependency should be a shared service instance
-registered using `provide()`. (The service instance may not be defined yet.)
+Returns a new instance of the specified entry class, or the entry value.
+Multiple calls to `new()` return different new object instances.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
-
-    $this->default(Foo::CLASS)->args(
-        $this->service(Bar::CLASS)
-    );
-}
+$foo1 = $container->new(Foo::CLASS);
+$foo2 = $container->new(Foo::CLASS);
+var_dump($foo1 === $foo2); // bool(false)
 ```
 
-### serviceCall(*string* $id, *string* $func, ...$args) : *LazyCall*
+### callableGet(*string* $id) : *callable*
 
-Use this to specify that a dependency should be the result of a method call to
-a shared service instance.
+Returns a call to `get()` wrapped in a closure. Useful for providing factories
+to other containers.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
-
-    // provide a MapperLocator
-    $this->provide(MapperLocator::CLASS);
-
-    // for the Wiki application service, get the WikiMapper
-    // out of the MapperLocator
-    $this->default(WikiService::CLASS)->args(
-        $this->serviceCall(MapperLocator::CLASS, 'get', WikiMapper::CLASS)
-    );
-}
+$callable = $container->callableGet(Foo::CLASS);
+$foo1 = $callable();
+$foo2 = $callable();
+var_dump($foo1 === $foo2); // bool(true)
 ```
 
-### new(*string* $class) : *LazyNew*
+### callableNew(*string* $id) : *callable*
 
-Use this to specify that a dependency should be a **new** instance of a class,
-not a shared instance.
+Returns a call to `new()` wrapped in a closure. Useful for providing factories
+to other containers.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
-
-    $this->default(Service::CLASS)->args(
-        $this->new(SupportingObject::CLASS)
-    );
-}
+$callable = $container->callableNew(Foo::CLASS);
+$foo1 = $callable();
+$foo2 = $callable();
+var_dump($foo1 === $foo2); // bool(false)
 ```
 
-The returned LazyNew object extends Config, so you can further configure the
-object prior to its instantiation, overriding the class defaults.
+## Object Definition Methods
 
-### call(*callable* $func, ...$args) : *LazyCall*
+Whereas the *Container* will create and retain objects automatically, you may
+need to define some factories and arguments for their construction. You can do
+so via the *Definitions* object.
 
-Use this to specify that a dependency should be the results of invoking a
-callable, whether an instance method, static method, or function. (The PHP
-keywords `include` and `require` are also supported.)
+When you are done with definitions, call `newContainer()` to get back a
+fully-configured *Container* object.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
+$def = new Definitions();
 
-    $this->default(Service::CLASS)->args(
-        $this->call('include', '/path/to/file.php')
-    );
-}
+// ...
+
+$container = $def->newContainer();
 ```
 
-### closure(*string* $func, ...$args) : *\Closure*
-
-This returns a Closure that makes a call to a Capsule container method. It is
-useful for providing new-instance and service-instance callables to other
-containers, locators, registries, and factories. It will not be invoked as a
-lazy-loaded dependency at instantiation time.
-
+Specify the entry definition by `$id`; you may enter object or value
+definitions.
 
 ```php
-<?php
-public function __construct()
-{
-    // ...
+// gets any existing definition, whether object or value.
+//
+// if the definition does not exist, it is created as via
+// $def->object(...) and returned.
+//
+// does not overwrite any previous entry.
+$def->object(Foo::CLASS)...;
 
-    // presuming the the MapperLocator takes an array of callable factories
-    // as its first argument
-    $this->default(MapperLocator::CLASS)->args(
-        [
-            $this->closure('newInstance', ThreadMapper::CLASS),
-            $this->closure('newInstance', AuthorMapper::CLASS),
-            $this->closure('newInstance', ReplyMapper::CLASS),
-        ]
-    );
-}
+// define an object entry, identified by an arbitrary string.
+// replaces the previous entry identified by that string.
+$def->object('foo2', Foo::CLASS)->...;
+
+// define an object entry, identified by an arbitrary string;
+// in this case, to define the default implementation for an
+// interface.
+//
+// replaces the previous entry identified by that string.
+$def->object(FooInterface::CLASS, Foo::CLASS);
+
+// define a value entry, identified by an arbitrary string.
+// replaces the previous entry identified by that string.
+$def->value('val1', ...);
 ```
 
-### env(*string* $key) : *mixed*
+> N.b.: Objects and values share the `$id` space.
 
-Returns the value of the container-specific `$env[$key]` property (if set), then
-the value of `getenv($id)` (if not `false`), and then `null`.
+### arguments(array $arguments) : *Definition*
 
-```php
-<?php
-public function __construct(array $env = [])
-{
-    $this->setEnv($env);
+Sets all the arguments for the `$id` constructor parameters, replacing all
+previously-existing arguments for `$id`.
 
-    // ...
-
-    $this->provide(PDO::CLASS)->args(
-        $this->env('DB_DSN'),
-        $this->env('DB_USERNAME'),
-        $this->env('DB_PASSWORD')
-    );
-}
-```
-
-The above will use `$env['DB_DSN']` (et al.) if they are passed to the
-constructor, and fall back to `getenv('DB_DSN')` if they are not.
-
-To set or replace all container-specific environment values, call
-`setEnv(array $env)`.
-
-To merge new values with existing container-specific environment values, call
-`addEnv(array $env)`.
-
-### alias(*string* $from, *string* $to) : *void*
-
-Use this to alias a class `$from` its original name `$to` another name. All
-requests for `$from` will receive an instance of `$to`.
-
-This can be useful for specifying default implementations for interfaces.
+Given this class:
 
 ```php
-<?php
-public function __construct()
+class Foo
 {
-    $this->alias('FooInterface', 'FooImplementation');
-    $instance = $this->newInstance('FooInterface'); // instanceof FooImplementation
-}
-```
-
-## Kickoff Methods
-
-These methods return an actual instance of the requested class, thus invoking
-all the lazy-loading configurations for that class and its dependency.
-
-These are protected methods, and should be called from typehinted
-methods on your extended container class to provide objects from your library,
-package, module, or component.
-
-### newInstance(*string* $class, ...$args) : *mixed*
-
-This returns a new instance of the specified class, with additional arguments
-that override the default for that class. Multiple calls to `newInstance()`
-return different new instances.
-
-```php
-<?php
-class MyCapsule extends \Capsule\Di\Container
-{
-    public function newPdo() : PDO
+    public function __construct(string $param1, string $param2)
     {
-        return $this->newInstance(PDO::CLASS);
+        // ...
     }
 }
 ```
 
-### serviceInstance(*string* $id) : *mixed*
-
-This returns a shared service instance from the Capsule. Multiple calls to
-`serviceInstance()` return the same instance.
+... you can set the constructor arguments by position like so:
 
 ```php
-<?php
-class MyCapsule extends \Capsule\Di\Container
+$def->object(Foo::CLASS)
+    ->arguments([
+        'arg1',
+        'arg2'
+    ]);
+```
+
+Alternatively, you can set the constructor arguments by name:
+
+```php
+$def->object(Foo::CLASS)
+    ->arguments([
+        'param1' => 'arg1',
+        'param2' => 'arg2'
+    ]);
+```
+
+> N.b.: Named arguments take precedence over positional ones.
+
+### argument(*int|string* $parameter, *mixed* $argument) : *Definition*
+
+Sets one argument for a `$id` constructor parameter by position or name,
+replacing any previously-existing argument.
+
+```php
+$def->object(Foo::CLASS)
+    ->argument(0, 'arg1')
+    ->argument('param2', 'arg2');
+```
+
+> N.b.: Named arguments take precedence over positional ones.
+
+### factory(*callable* $callable) : *Definition*
+
+Use this to set a callable factory for a `$id` (instead of letting the
+*Container* to construct it for you). The callable factory must have the
+following signature ...
+
+    function (Container $container)
+
+... and may specify the return type.
+
+For example:
+
+```php
+$def->object(Foo::CLASS)
+    ->factory(function (Container $container) {
+        return new Foo(); // or perform any other complex creation logic
+    });
+```
+
+This can be useful for defining default implementations of interfaces as well:
+
+```php
+$def->object(BarInterface::CLASS)
+    ->factory(function (Container $container) : BarImplementation {
+        return new BarImplementation();
+    });
+```
+
+### method(*string* $method, ...$arguments) : *Definition*
+
+Specifies methods to call on the `$id` object after it is instantiated,
+whether by *Container* itself or by a factory. Use this for setter injection,
+or for other post-instantiation initializer logic.
+
+Given this class ...
+
+```php
+class Foo
 {
-    public function getPdo() : PDO
+    protected $string;
+
+    public function append(string $suffix)
     {
-        return $this->serviceInstance(PDO::CLASS);
+        $this->string .= $suffix;
     }
 }
 ```
 
-## Config Object Methods
-
-These fluent methods are available on the return of `default()`, `new()`, and
-`provide()`. They allow you to further configure the class specified by those
-methods.
-
-### args(...$args) : *self*
-
-Sets the constructor arguments for the class. These are sequential; lazy-loaded
-dependencies will be invoked when the object is actually created. Multiple
-calls to `args()` will **reset and replace** the previous constructor arguments.
-
-To reset the args, call `resetArgs()`.
-
-### call(*string* $func, ...$args) : *self*
-
-Adds one post-instantiation method call on the object. This is good for setter
-injection, and for post-instantiation setup methods. Multiple calls to `call()`
-will **add to** the previous calls.
-
-To reset the calls, use `resetCalls()`.
-
-### factory(*callable* $factory) : *self*
-
-Sets a custom factory callable to use for instantiating the object. This factory
-will be used **in place of** the Capsule factory. The `$args` values will
-be passed to the custom factory when it is called, and the `$calls` will be made
-on the object returned from the custom factory.
-
-To reset the factory so that Capsule factory is used, call `resetFactory()`.
-
-## Automated Configuration
-
-If you do not define the `default()` configuration for a class, the Capsule
-will reflect on the requested class instance and examine its constructor
-arguments. The Capsule will then populate each argument with:
-
-- a shared service instance with a matching class name, if one has been
-  `provide()`-ed; or,
-- a new instance of that class
-
-Non-class typehints cannot be configured automatically.
-
-## Implementing PSR-11
-
-PSR-11 is a "stringly"-typed interface. The Capsule container does not implement
-it by default, but you can do so easily.
+... you might call these methods after instantiation:
 
 ```php
-<?php
-class Psr11Capsule
-extends \Capsule\Di\Container
-implements \Psr\Container\ContainerInterface
-{
-    public function get($id)
-    {
-        return $this->getRegistry()->get($id);
-    }
-
-    public function has($id)
-    {
-        return $this->getRegistry()->has($id);
-    }
-}
+$def->object(Foo::CLASS)
+    ->method('append', 'bar')
+    ->method('append', 'baz');
 ```
 
-## Serving From Other Containers
+## Lazy Arguments
 
-TBD.
+Often you will not want to have your arguments evaluated at the time you specify
+them. For example, you may want a specify a new object instance as a constructor
+argument, but of course you don't want to instantiate that object at the moment
+of configuration; you want to instantiate it only at the moment of construction.
 
-## Providing To Other Containers
+The *Lazy* class allows for late evaluation of arguments; they are resolved only
+as the *Container* creates objects or calls methods on those objects. Use the
+*Lazy* static factory methods to create *Lazy* objects for a variety of
+purposes.
 
-TBD.
+> N.b.: *Lazy* can be used both for constructor arguments and for `method()`
+call arguments.
 
-Note that you can wrap it in a closure or other lazy-loader so that it does
-not get created until it is called.
+### Lazy::call(*callable* $callable) : Lazy
+
+Resolves to the result returned by a [callable](https://www.php.net/callable);
+the callable must have this signature ...
+
+    function (Container $container)
+
+... and may specify the return type.
+
+For example:
+
+```php
+$def->object(Foo::class)
+    ->argument('bar', Lazy::call(
+        function (Container $container) {
+            $bar = $container->new(Bar::CLASS);
+            // do some work with $bar, then:
+            return $bar->getValue();
+        }
+    )
+);
+```
+
+### Lazy::env(*string* $varname) : Lazy
+
+Resolves to the value of the *$varname* environment variable.
+
+```php
+$def->object(Foo::CLASS)
+    ->argument('bar', Lazy::env('BAR'));
+
+// --> return getenv('BAR');
+```
+
+### Lazy::functionCall(string $function, ...$arguments) : Lazy
+
+Resolves to the return of a function call.
+
+```php
+$def->object(Foo::class)
+    ->argument('bar', Lazy::functionCall('barfunc'));
+
+// --> return barfunc();
+```
+
+> N.b.: The `$arguments` themselves can be *Lazy* as well.
+
+### Lazy::get(*string* $id) : Lazy
+
+Resolves to an object returned by *Container* `get()`.
+
+```php
+$def->object(Foo::CLASS)
+    ->argument('bar', Lazy::get(Bar::CLASS));
+
+// --> return $container->get(Bar::CLASS);
+```
+
+### Lazy::getCall(*string* $id, *string* $method, ...$arguments) : Lazy
+
+Resolves to a method call on an object returned by *Container* `get()`.
+
+```php
+$def->object(Foo::CLASS)
+    ->method('setBarVal', Lazy::getCall(Bar::CLASS, 'getValue'));
+
+// --> return $container->get(Bar::CLASS)->getValue();
+```
+
+> N.b.: The `$arguments` themselves can be *Lazy* as well.
+
+### Lazy::include(string $file) : Lazy
+
+Resolves to the result returned by including a file.
+
+```php
+$def->object(Foo::CLASS)
+    ->method('setBar', Lazy::include('bar.php'));
+
+// --> return include 'bar.php';
+```
+
+### Lazy::new(*string* $id) : Lazy
+
+Resolves to an object returned by *Container* `new()`.
+
+```php
+$def->object(Foo::CLASS)
+    ->arguments([Lazy::new(Bar::CLASS)]);
+
+// --> $container->new(Bar::CLASS)
+```
+
+### Lazy::newCall(*string* $id, *string* $method, ...$arguments) : Lazy
+
+Resolves to a method call on an object returned by *Container* `new()`.
+
+```php
+$def->object(Foo::CLASS)
+    ->method('setBarVal', Lazy::newCall(Bar::CLASS, 'getValue'));
+
+// --> $container->new(Bar::CLASS)->getValue();
+```
+
+> N.b.: The `$arguments` themselves can be *Lazy* as well.
+
+### Lazy::require(string $file) : Lazy
+
+Resolves to the result returned by requiring a file.
+
+```php
+$def->object(Foo::CLASS)
+    ->method('setBar', Lazy::require('bar.php'));
+
+// --> return require 'bar.php';
+```
+
+### Lazy::staticCall(string $class, string $method, ...$arguments) : Lazy
+
+Resolves to the return of a static method call.
+
+```php
+$def->object(Foo::class)
+    ->argument('bar', Lazy::staticCall('Bar', 'func'));
+
+// --> return Bar::func();
+```
+
+> N.b.: The `$arguments` themselves can be *Lazy* as well.
+
+## Value Definition Methods
+
+The *Definitions* object has one method to define value `$id` entries:
+
+```php
+// define the 'foo' $id entry as the string 'bar'
+$def->value('foo', 'bar');
+```
+
+This will replace any previously exising `foo` value, but *will not* replace a
+previously existing `foo` object; the call to `value()` will throw an exception
+in that case.
+
+Values can be any PHP value: scalar, array, resource, etc.
