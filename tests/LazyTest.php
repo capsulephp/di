@@ -60,11 +60,27 @@ class LazyTest extends \PHPUnit\Framework\TestCase
         $expect = 'included';
         $actual = $lazy($container);
         $this->assertSame($expect, $actual);
+
+        $lazy = Lazy::include(Lazy::call(function ($container) {
+            return __DIR__ . DIRECTORY_SEPARATOR . 'include_file.php';
+        }));
+        $container = new Container();
+        $expect = 'included';
+        $actual = $lazy($container);
+        $this->assertSame($expect, $actual);
     }
 
     public function testRequire()
     {
         $lazy = Lazy::require(__DIR__ . DIRECTORY_SEPARATOR . 'include_file.php');
+        $container = new Container();
+        $expect = 'included';
+        $actual = $lazy($container);
+        $this->assertSame($expect, $actual);
+
+        $lazy = Lazy::require(Lazy::call(function ($container) {
+            return __DIR__ . DIRECTORY_SEPARATOR . 'include_file.php';
+        }));
         $container = new Container();
         $expect = 'included';
         $actual = $lazy($container);

@@ -40,12 +40,18 @@ class Lazy
         return new Lazy\LazyNewCall($class, $method, $arguments);
     }
 
-    public static function include(string $file) : Lazy\LazyInclude
+    /**
+     * @param string|LazyInterface $file The file to include and return.
+     */
+    public static function include($file) : Lazy\LazyInclude
     {
         return new Lazy\LazyInclude($file);
     }
 
-    public static function require(string $file) : Lazy\LazyRequire
+    /**
+     * @param string|LazyInterface $file The file to include and return.
+     */
+    public static function require($file) : Lazy\LazyRequire
     {
         return new Lazy\LazyRequire($file);
     }

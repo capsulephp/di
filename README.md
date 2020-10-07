@@ -268,7 +268,7 @@ purposes.
 > N.b.: *Lazy* can be used both for constructor arguments and for `method()`
 call arguments.
 
-### Lazy::call(*callable* $callable) : Lazy
+### Lazy::call(*callable* $callable) : LazyInterface
 
 Resolves to the result returned by a [callable](https://www.php.net/callable);
 the callable must have this signature ...
@@ -291,7 +291,7 @@ $def->object(Foo::class)
 );
 ```
 
-### Lazy::env(*string* $varname) : Lazy
+### Lazy::env(*string* $varname) : LazyInterface
 
 Resolves to the value of the *$varname* environment variable.
 
@@ -302,7 +302,7 @@ $def->object(Foo::CLASS)
 // --> return getenv('BAR');
 ```
 
-### Lazy::functionCall(string $function, ...$arguments) : Lazy
+### Lazy::functionCall(*string* $function, ...$arguments) : LazyInterface
 
 Resolves to the return of a function call.
 
@@ -315,7 +315,7 @@ $def->object(Foo::class)
 
 > N.b.: The `$arguments` themselves can be *Lazy* as well.
 
-### Lazy::get(*string* $id) : Lazy
+### Lazy::get(*string* $id) : LazyInterface
 
 Resolves to an object returned by *Container* `get()`.
 
@@ -326,7 +326,7 @@ $def->object(Foo::CLASS)
 // --> return $container->get(Bar::CLASS);
 ```
 
-### Lazy::getCall(*string* $id, *string* $method, ...$arguments) : Lazy
+### Lazy::getCall(*string* $id, *string* $method, ...$arguments) : LazyInterface
 
 Resolves to a method call on an object returned by *Container* `get()`.
 
@@ -339,7 +339,7 @@ $def->object(Foo::CLASS)
 
 > N.b.: The `$arguments` themselves can be *Lazy* as well.
 
-### Lazy::include(string $file) : Lazy
+### Lazy::include(*string|LazyInterface* $file) : LazyInterface
 
 Resolves to the result returned by including a file.
 
@@ -350,7 +350,7 @@ $def->object(Foo::CLASS)
 // --> return include 'bar.php';
 ```
 
-### Lazy::new(*string* $id) : Lazy
+### Lazy::new(*string* $id) : LazyInterface
 
 Resolves to an object returned by *Container* `new()`.
 
@@ -361,7 +361,7 @@ $def->object(Foo::CLASS)
 // --> $container->new(Bar::CLASS)
 ```
 
-### Lazy::newCall(*string* $id, *string* $method, ...$arguments) : Lazy
+### Lazy::newCall(*string* $id, *string* $method, ...$arguments) : LazyInterface
 
 Resolves to a method call on an object returned by *Container* `new()`.
 
@@ -374,7 +374,7 @@ $def->object(Foo::CLASS)
 
 > N.b.: The `$arguments` themselves can be *Lazy* as well.
 
-### Lazy::require(string $file) : Lazy
+### Lazy::require(*string|Lazy* $file) : LazyInterface
 
 Resolves to the result returned by requiring a file.
 
@@ -385,7 +385,7 @@ $def->object(Foo::CLASS)
 // --> return require 'bar.php';
 ```
 
-### Lazy::staticCall(string $class, string $method, ...$arguments) : Lazy
+### Lazy::staticCall(*string* $class, *string* $method, ...$arguments) : LazyInterface
 
 Resolves to the return of a static method call.
 
