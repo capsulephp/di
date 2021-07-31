@@ -416,8 +416,8 @@ Values can be any PHP value: scalar, array, resource, etc.
 ## Definition Providers
 
 You can create a series of _Provider_ classes to operate on a _Definitions_
-instance. This can help to keep logical layers separate from each other, so you
-can mix-and-match them on a contextual basis.
+instance. This can help to keep definition sets separate from each other, so
+you can mix-and-match them on a contextual basis.
 
 To do so, implement the _Provider_ interface ...
 
