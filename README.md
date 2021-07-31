@@ -412,3 +412,54 @@ previously existing `foo` object; the call to `value()` will throw an exception
 in that case.
 
 Values can be any PHP value: scalar, array, resource, etc.
+
+## Definition Providers
+
+You can create a series of _Provider_ classes to operate on a _Definitions_
+instance. This can help to keep logical layers separate from each other, so you
+can mix-and-match them on a contextual basis.
+
+To do so, implement the _Provider_ interface ...
+
+```php
+use Capsule\Di\Definitions;
+use Capsule\Di\Lazy;
+use Capsule\Di\Provider;
+
+class PdoProvider implements Provider
+{
+    public function provide(Definitions $def) : void
+    {
+        $def->object(PDO::CLASS)
+            ->arguments([
+                Lazy::env('PDO_DSN'),
+                Lazy::env('PDO_USERNAME'),
+                Lazy::env('PDO_PASSWORD')
+            ]);
+    }
+}
+```
+
+... then pass any number of _Provider_ instances to `ContainerFactory::new()`
+method:
+
+```php
+$container = ContainerFactory::new([
+    new PdoProvider(),
+]);
+```
+
+> **Note:**
+>
+> `ContainerFactory::new()` will take any iterable collection of _Provider_
+> instances, not just an array.
+
+You can use _Provider_ instances to provide definitions for:
+
+- classes or class collections
+- libraries or library collections
+- packages or package collections
+- separate layers (Domain layer, Infrastructure layer, etc)
+- HTTP environments, CLI environments, test environments, etc
+
+It is up to you how you organize your providers.
