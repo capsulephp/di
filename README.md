@@ -451,8 +451,7 @@ $container = ContainerFactory::new([
 
 > **Note:**
 >
-> `ContainerFactory::new()` will take any iterable collection of _Provider_
-> instances, not just an array.
+> `ContainerFactory::new()` will take any iterable, not just an array.
 
 You can use _Provider_ instances to provide definitions for:
 
