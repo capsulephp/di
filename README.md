@@ -1,4 +1,4 @@
-# Capsule
+# Capsule 1.x
 
 Most dependency injection containers work through public configuration, are
 intended for use at the application level, and use "stringly"-typed retrieval
