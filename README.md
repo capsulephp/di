@@ -1,4 +1,4 @@
-# Capsule
+# Capsule 2.x
 
 A [PSR-11](https://www.php-fig.org/psr/psr-11/) compliant autowiring dependency
 injection container with class-based configuration of constructor arguments and
