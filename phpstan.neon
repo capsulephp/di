@@ -1,0 +1,8 @@
+parameters:
+    level: max
+    paths:
+        - src
+    ignoreErrors:
+        - "#no value type specified in iterable type array#"
+        - "#function call_user_func expects callable#"
+    checkGenericClassInNonGenericObjectType: false

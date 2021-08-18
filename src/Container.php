@@ -3,51 +3,54 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
-use Capsule\Di\Lazy\LazyInterface;
+use Capsule\Di\Lazy\Lazy;
 use Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface
 {
-    protected $definitions;
+    protected array $registry = [];
 
-    protected $instances = [];
-
-    public function __construct(?Definitions $definitions = null)
-    {
-        if ($definitions === null) {
-            $definitions = new Definitions();
+    /**
+     * @param Provider[] $providers
+     */
+    public function __construct(
+        protected Definitions $definitions,
+        iterable $providers = []
+    ) {
+        foreach ($providers as $provider) {
+            $provider->provide($this->definitions);
         }
-        $this->definitions = $definitions;
-        $this->instances[static::CLASS] = $this;
+
+        $this->registry[static::CLASS] = $this;
     }
 
-    public function get($id)
+    public function get(string $id) : mixed
     {
-        if (! isset($this->instances[$id])) {
-            $this->instances[$id] = $this->new($id);
+        if (! isset($this->registry[$id])) {
+            $this->registry[$id] = $this->new($id);
         }
 
-        return $this->instances[$id];
+        return $this->registry[$id];
     }
 
-    public function has(/* string */ $id) /* : bool */
+    public function has(string $id) : bool
     {
-        return $this->definitions->has($id);
+        return isset($this->definitions->$id) || class_exists($id);
     }
 
-    public function new(string $id)
+    public function new(string $id) : mixed
     {
-        if (! $this->definitions->has($id)) {
-            throw new NotFoundException($id);
+        $definition = $this->definitions->$id;
+
+        if ($definition instanceof Definition) {
+            return $definition->new($this);
         }
 
-        $spec = $this->definitions->get($id);
-
-        if ($spec instanceof Definition) {
-            return $spec->new($this);
+        if ($definition instanceof Lazy) {
+            return Lazy::resolveArgument($this, $definition);
         }
 
-        return $spec;
+        return $definition;
     }
 
     public function callableGet(string $id) : callable

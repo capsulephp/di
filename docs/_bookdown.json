@@ -1,0 +1,10 @@
+{
+	"title": "Capsule 3.x",
+	"content": [
+		"overview.md",
+		"container.md",
+		"definitions/_bookdown.json",
+		"lazy.md",
+		"providers.md"
+	]
+}
