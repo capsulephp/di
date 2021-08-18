@@ -5,6 +5,7 @@
 		"container.md",
 		"definitions/_bookdown.json",
 		"lazy.md",
-		"providers.md"
+		"providers.md",
+		"upgrading.md"
 	]
 }
