@@ -58,9 +58,7 @@ Upgrading from 2.x to 3.x may be tedious but not difficult.
     ```php
     class Foo
     {
-        public $bar;
-
-        public function __construct($bar)
+        public function __construct(public string $bar)
         {
         }
     }
