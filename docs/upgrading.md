@@ -69,11 +69,11 @@ Upgrading from 2.x to 3.x may be tedious but not difficult.
         ->argument('bar', 'named')
         ->argument(0, 'positional');
 
-    // 3.x: $foo->bar will be 'positional'
+    // 3.x: $foo->bar will be 'positional again'
     $def->{Foo::CLASS}
         ->argument(0, 'positional')
         ->argument('bar', 'named')
-        ->argument(0, 'positional');
+        ->argument(0, 'positional again');
     ```
 
 - 2.x used _Lazy_ static methods for lazy resolution; 3.x _Definitions_
