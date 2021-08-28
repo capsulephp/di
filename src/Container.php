@@ -40,17 +40,7 @@ class Container implements ContainerInterface
 
     public function new(string $id) : mixed
     {
-        $definition = $this->definitions->$id;
-
-        if ($definition instanceof Definition) {
-            return $definition->new($this);
-        }
-
-        if ($definition instanceof Lazy) {
-            return Lazy::resolveArgument($this, $definition);
-        }
-
-        return $definition;
+        return Lazy::resolveArgument($this, $this->definitions->$id);
     }
 
     public function callableGet(string $id) : callable

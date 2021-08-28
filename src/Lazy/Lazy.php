@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Container;
+use Capsule\Di\Definition;
 
 abstract class Lazy
 {
@@ -24,9 +25,16 @@ abstract class Lazy
         mixed $argument
     ) : mixed
     {
+        if ($argument instanceof Definition) {
+            return $argument->new($container);
+        }
+
         if ($argument instanceof Lazy) {
-            $argument = $argument($container);
-            static::resolveArgument($container, $argument);
+            return $argument($container);
+        }
+
+        if (is_array($argument)) {
+            return static::resolveArguments($container, $argument);
         }
 
         return $argument;

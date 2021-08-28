@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Capsule\Di;
 
 use Capsule\Di\Exception;
+use stdClass;
 
-class Definitions
+class Definitions extends stdClass
 {
     public function __get(string $id) : mixed
     {
