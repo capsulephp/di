@@ -10,10 +10,6 @@ class Definitions extends stdClass
 {
     public function __get(string $id) : mixed
     {
-        if (property_exists($this, $id)) {
-            return $this->$id;
-        }
-
         $definition = $this->newDefinition($id);
 
         if ($definition === null) {
