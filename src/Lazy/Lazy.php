@@ -25,14 +25,30 @@ abstract class Lazy
     ) : mixed
     {
         if ($argument instanceof Lazy) {
-            $argument = $argument($container);
+            return $argument($container);
         }
 
         if (is_array($argument)) {
-            return static::resolveArguments($container, $argument);
+            return static::resolveArrayArgument($container, $argument);
         }
 
         return $argument;
+    }
+
+    static public function resolveArrayArgument(
+        Container $container,
+        array $values
+    ) : array
+    {
+        $return = [];
+
+        foreach ($values as $key => $value) {
+            $return[$key] = ($value instanceof Lazy)
+                ? $value($container)
+                : $value;
+        }
+
+        return $return;
     }
 
     abstract public function __invoke(Container $container) : mixed;
