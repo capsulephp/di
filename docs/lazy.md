@@ -24,6 +24,16 @@ $def->{Foo::CLASS}
     );
 ```
 
+You may optionally specify a type to cast the value to:
+
+```php
+$def->{Foo::CLASS}
+    ->argument(
+        'bar',
+        $def->env('BAR', 'int') // (int) getenv('BAR')
+    );
+```
+
 ## Any Callable
 
 <code>call(*callable* $callable) : Lazy\Call</code>
