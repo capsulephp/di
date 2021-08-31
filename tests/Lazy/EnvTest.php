@@ -17,6 +17,16 @@ class EnvTest extends LazyTest
         $this->assertEquals($expect, $actual);
     }
 
+    public function testType()
+    {
+        $varname = 'CAPSULE_DI_FOO';
+        $lazy = new Env($varname, 'int');
+        $expect = random_int(1, 100);
+        putenv("CAPSULE_DI_FOO={$expect}");
+        $actual = $this->actual($lazy);
+        $this->assertSame($expect, $actual);
+    }
+
     public function testNoSuchVar()
     {
         $varname = 'CAPSULE_DI_' . random_int(1, 100);

@@ -38,9 +38,9 @@ class Definitions extends stdClass
         return new Lazy\Call($callable);
     }
 
-    public function env(string $varname) : Lazy\Env
+    public function env(string $varname, string $vartype = null) : Lazy\Env
     {
-        return new Lazy\Env($varname);
+        return new Lazy\Env($varname, $vartype);
     }
 
     public function functionCall(

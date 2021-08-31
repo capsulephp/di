@@ -8,21 +8,28 @@ use Capsule\Di\Exception;
 
 class Env extends Lazy
 {
-    public function __construct(protected string $varname)
-    {
-        $this->varname = $varname;
+    public function __construct(
+        protected string $varname,
+        protected ?string $vartype = null
+    ) {
     }
 
     public function __invoke(Container $container) : mixed
     {
         $env = getenv();
 
-        if (array_key_exists($this->varname, $env)) {
-            return $env[$this->varname];
+        if (! array_key_exists($this->varname, $env)) {
+            throw new Exception\NotDefined(
+                "Evironment variable '{$this->varname}' is not defined."
+            );
         }
 
-        throw new Exception\NotDefined(
-            "Evironment variable '{$this->varname}' is not defined."
-        );
+        $value = $env[$this->varname];
+
+        if ($this->vartype !== null) {
+            settype($value, $this->vartype);
+        }
+
+        return $value;
     }
 }

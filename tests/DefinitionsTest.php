@@ -108,6 +108,11 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
             Lazy\Env::CLASS,
             $this->def->env('CAPSULE_DI_FOO')
         );
+
+        $this->assertInstanceOf(
+            Lazy\Env::CLASS,
+            $this->def->env('CAPSULE_DI_FOO', 'int')
+        );
     }
 
     public function testFunctionCall()
