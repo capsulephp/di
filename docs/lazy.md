@@ -198,7 +198,7 @@ the _Container_.
 
 ## Arrays
 
-If an argument is an array, each element in that array will be inspected
+If an argument is an array, each top-level element in that array will be inspected
 for _Lazy_ resolution. You can mix _Lazy_ and non-_Lazy_ elements together in
 the array, and the non-_Lazy_ elements will be left as-is.
 
@@ -211,9 +211,9 @@ $def->{Foo::CLASS}
     ])
 ```
 
-_Lazy_ resolution of array elements is recursive. All elements and sub-elements
- in the array will be lazy-resolved, and if a _Lazy_ element returns an array,
- the elements in that array will be lazy-resolved.
+_Lazy_ resolution of array elements is non-recursive; only the top-level
+elements will be lazy-resolved. Likewise, an array returned by _Lazy_
+resolution will not itself be lazy-resolved.
 
 Array-element _Lazy_ resolution applies only to arrays proper, not to iterables
 in general.
