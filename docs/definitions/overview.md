@@ -21,8 +21,10 @@ $def->typicalPropertyName = ...;
 $def->{'unusual.property-name'} = ...;
 ```
 
-You can specify a class definition or an interface definition by addressing it as a property on the _Definitions_ class. Doing so will create the definition if
-it does not already exist, and will reuse any previously existing definition.
+You can specify a class definition or an interface definition by addressing it
+as a property on the _Definitions_ class. Doing so will create the definition
+if it does not already exist, and will reuse any previously existing
+definition.
 
 ```php
 // a class definition
@@ -44,6 +46,15 @@ definition of that class.
 
 ```php
 $def->fooService = $def->newDefinition(Foo::CLASS)->...;
+```
+
+You can define an alias to another definition like so:
+
+```php
+// {'foo.alias'} and {Foo::CLASS} will refer to
+// the exact same definition; changing one will
+// change the other
+$def->{'foo.alias'} = $def->{Foo::CLASS};
 ```
 
 Finally, you can check `isset()` on the _Definitions_ properties and `unset

@@ -22,7 +22,6 @@ $def->{Foo::CLASS}
         'bar',
         $def->env('BAR') // getenv('BAR')
     );
-
 ```
 
 ## Any Callable
@@ -178,3 +177,43 @@ $def->{Foo::CLASS}
         $def->require('bar.php') // require 'bar.php'
     );
 ```
+
+## Standalone Definitions
+
+Each definition itself is _Lazy_ and will resolve to a new instance of the
+specified class as defined.
+
+```php
+$def->{Foo::CLASS}
+    ->argument(
+        'zim',
+        $def->newDefinition(Zim::CLASS) // new Zim()
+    );
+```
+
+Note that this is different from resolving via the _Container_ as per `new()`.
+With a standalone definition, you can specify the arguments, modifiers,
+factory, etc. separately from whatever the "default" definition is in
+the _Container_.
+
+## Arrays
+
+If an argument is an array, each element in that array will be inspected
+for _Lazy_ resolution. You can mix _Lazy_ and non-_Lazy_ elements together in
+the array, and the non-_Lazy_ elements will be left as-is.
+
+```php
+$def->{Foo::CLASS}
+    ->argument('list', [
+        $def->env('BAR'), // getenv('BAR')
+        'BAZ',
+        $def->env('DIB'), // getenv('BAZ')
+    ])
+```
+
+_Lazy_ resolution of array elements is recursive. All elements and sub-elements
+ in the array will be lazy-resolved, and if a _Lazy_ element returns an array,
+ the elements in that array will be lazy-resolved.
+
+Array-element _Lazy_ resolution applies only to arrays proper, not to iterables
+in general.
