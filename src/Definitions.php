@@ -43,6 +43,11 @@ class Definitions extends stdClass
         return new Lazy\Env($varname, $vartype);
     }
 
+    public function array(array $values = []) : Lazy\ArrayValues
+    {
+        return new Lazy\ArrayValues($values);
+    }
+
     public function functionCall(
         string $function,
         mixed ...$arguments

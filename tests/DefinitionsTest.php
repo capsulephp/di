@@ -115,6 +115,14 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testArray()
+    {
+        $this->assertInstanceOf(
+            Lazy\ArrayValues::CLASS,
+            $this->def->array(['foo'])
+        );
+    }
+
     public function testFunctionCall()
     {
         $this->assertInstanceOf(

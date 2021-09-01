@@ -188,6 +188,47 @@ $def->{Foo::CLASS}
     );
 ```
 
+## Array Values
+
+<code>array(array $values) : Lazy\ArrayValues</code>
+
+Resolves to an array, where each element has itself been lazy-resolved.
+
+Each element in the array will be inspected for _Lazy_ resolution. This is a
+recursive inspection; if an array element is an array, that sub-array will also
+be lazy-resolved. You can mix _Lazy_ and non-_Lazy_ elements together in the
+array; the non-_Lazy_ elements will be left as-is.
+
+```php
+$def->{Foo::CLASS}
+    ->argument('list', $def->array([
+        $def->env('BAR'), // getenv('BAR')
+        'BAZ',
+        $def->env('DIB'), // getenv('DIB')
+    ])
+```
+
+The _ArrayValues_ object implements [_ArrayAccess_](https://php.net/ArrayAccess),
+[_Countable_](https://php.net/Countable), and
+[_IteratorAggregate_](https://php.net/IteratorAggregate), so in many cases you
+can work with it as if it is an array:
+
+```php
+$def->listing = $def->array([
+    'bar' => $def->env('BAR')
+]);
+$def->listing['baz'] = 'BAZ',
+$def->listing['dib'] = $def->env('DIB');
+
+$count = count($def->listing); // 3
+
+unset($def->listing['baz']);
+
+foreach ($def->listing as $key => $value) {
+    // ...
+}
+```
+
 ## Standalone Definitions
 
 Each definition itself is _Lazy_ and will resolve to a new instance of the
@@ -205,25 +246,3 @@ Note that this is different from resolving via the _Container_ as per `new()`.
 With a standalone definition, you can specify the arguments, modifiers,
 factory, etc. separately from whatever the "default" definition is in
 the _Container_.
-
-## Arrays
-
-If an argument is an array, each top-level element in that array will be inspected
-for _Lazy_ resolution. You can mix _Lazy_ and non-_Lazy_ elements together in
-the array, and the non-_Lazy_ elements will be left as-is.
-
-```php
-$def->{Foo::CLASS}
-    ->argument('list', [
-        $def->env('BAR'), // getenv('BAR')
-        'BAZ',
-        $def->env('DIB'), // getenv('BAZ')
-    ])
-```
-
-_Lazy_ resolution of array elements is non-recursive; only the top-level
-elements will be lazy-resolved. Likewise, an array returned by _Lazy_
-resolution will not itself be lazy-resolved.
-
-Array-element _Lazy_ resolution applies only to arrays proper, not to iterables
-in general.
