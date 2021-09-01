@@ -33,6 +33,11 @@ class Definitions extends stdClass
         return null;
     }
 
+    public function array(array $values = []) : Lazy\ArrayValues
+    {
+        return new Lazy\ArrayValues($values);
+    }
+
     public function call(callable $callable) : Lazy\Call
     {
         return new Lazy\Call($callable);
@@ -41,11 +46,6 @@ class Definitions extends stdClass
     public function env(string $varname, string $vartype = null) : Lazy\Env
     {
         return new Lazy\Env($varname, $vartype);
-    }
-
-    public function array(array $values = []) : Lazy\ArrayValues
-    {
-        return new Lazy\ArrayValues($values);
     }
 
     public function functionCall(

@@ -73,7 +73,7 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         }
 
         if (is_array($value)) {
-            return $this->resolveValues($value);
+            return $this->resolveValues($container, $value);
         }
 
         return $value;
