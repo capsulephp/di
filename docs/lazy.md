@@ -12,7 +12,7 @@ the _Container_ reads from the _Definitions_.
 
 ## Environment Variables
 
-<code>env(*string* $varname) : Lazy\Env</code>
+<code>env(*string* $varname[, *string* $vartype = null]) : Lazy\Env</code>
 
 Resolves to the value of the `$varname` environment variable.
 
