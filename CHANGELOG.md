@@ -9,7 +9,8 @@
 
 - The _Definition_ class now extends _Lazy_ so it can be lazy-resolved.
 
-- Elements in an argument array will now be non-recursively lazy-resolved.
+- Array values can now be lazy-resolved via the Definitions method `array()`.
+
 
 ## 3.0.0
 
