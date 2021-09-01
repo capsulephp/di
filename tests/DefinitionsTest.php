@@ -102,6 +102,19 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testCsEnv()
+    {
+        $this->assertInstanceOf(
+            Lazy\Env::CLASS,
+            $this->def->csEnv('CAPSULE_DI_FOO')
+        );
+
+        $this->assertInstanceOf(
+            Lazy\Env::CLASS,
+            $this->def->csEnv('CAPSULE_DI_FOO', 'int')
+        );
+    }
+
     public function testEnv()
     {
         $this->assertInstanceOf(

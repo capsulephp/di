@@ -16,6 +16,17 @@ class Env extends Lazy
 
     public function __invoke(Container $container) : mixed
     {
+        $value = $this->getEnv();
+
+        if ($this->vartype !== null) {
+            settype($value, $this->vartype);
+        }
+
+        return $value;
+    }
+
+    protected function getEnv() : mixed
+    {
         $env = getenv();
 
         if (! array_key_exists($this->varname, $env)) {
@@ -24,12 +35,6 @@ class Env extends Lazy
             );
         }
 
-        $value = $env[$this->varname];
-
-        if ($this->vartype !== null) {
-            settype($value, $this->vartype);
-        }
-
-        return $value;
+        return $env[$this->varname];
     }
 }
