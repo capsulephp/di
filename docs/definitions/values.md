@@ -79,18 +79,18 @@ $def->{Foobar\Database\Connection::CLASS}
     ]);
 ```
 
-... or they may be named for a class ...
+... or they may be named for class constructor parameters ...
 
 ```php
-$def->{'Foobar.Database.Connection:dsn'} = $def->env('DB_DSN');
-$def->{'Foobar.Database.Connection:username'} = $def->env('DB_USER');
-$def->{'Foobar.Database.Connection:password'} = $def->env('DB_PASS');
+$def->{'Foobar\Database\Connection:dsn'} = $def->env('DB_DSN');
+$def->{'Foobar\Database\Connection:username'} = $def->env('DB_USER');
+$def->{'Foobar\Database\Connection:password'} = $def->env('DB_PASS');
 
 $def->{Foobar\Database::CLASS}
     ->arguments([
-        $def->get('Fooabr.Database.Connection:dsn'),
-        $def->get('Fooabr.Database.Connection:username'),
-        $def->get('Fooabr.Database.Connection:password'),
+        $def->get('Foobar\Database\Connection:dsn'),
+        $def->get('Foobar\Database\Connection:username'),
+        $def->get('Foobar\Database\Connection:password'),
     ]);
 ```
 
