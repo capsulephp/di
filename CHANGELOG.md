@@ -11,6 +11,10 @@
 
 - Array values can now be lazy-resolved via the Definitions method `array()`.
 
+- _ClassDefinition_ now supports variadic constructor arguments.
+
+- _ClassDefinition_ will now throw an exception if an optional constructor
+  argument is not set, when a later argument is defined.
 
 ## 3.0.0
 
