@@ -48,7 +48,7 @@ for their IDs. To reduce naming conflicts among different libraries and
 packages, you may wish to adopt a value naming convention based on where those
 values will be used.
 
-For example, given a package named `foobar/database` package with this class ...
+For example, given a `foobar/database` package with this class ...
 
 ```php
 namespace Foobar\Database;
