@@ -86,7 +86,7 @@ $def->{'Foobar\Database\Connection:dsn'} = $def->env('DB_DSN');
 $def->{'Foobar\Database\Connection:username'} = $def->env('DB_USER');
 $def->{'Foobar\Database\Connection:password'} = $def->env('DB_PASS');
 
-$def->{Foobar\Database::CLASS}
+$def->{Foobar\Database\Connection::CLASS}
     ->arguments([
         $def->get('Foobar\Database\Connection:dsn'),
         $def->get('Foobar\Database\Connection:username'),
