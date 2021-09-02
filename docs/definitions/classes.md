@@ -9,6 +9,8 @@ order.
 
 ### Constructor Arguments
 
+#### By Position or Name
+
 Given this class ...
 
 ```php
@@ -63,6 +65,8 @@ $def->{Foo::CLASS}
     ->argument(0, 'positional again'); // $param0 is now 'positional again'
 ```
 
+#### By Typehint
+
 You can also specify arguments by typehint. Given a class like this ...
 
 ```php
@@ -89,8 +93,32 @@ $def->{Bar::CLASS}
 Specifying arguments by typehint is best combined with _Lazy_ resolution,
 described elsewhere.
 
-**Arguments specified by name or position take precedence over arguments specified
-by typehint.**
+**Arguments specified by name or position take precedence over arguments
+specified by typehint.**
+
+#### Variadic Arguments
+
+If a class has a variadic constructor argument ...
+
+```php
+class Baz
+{
+    protected array $items;
+
+    public function __construct(
+        string ...$items
+    } {
+        $this->items = $items;
+    }
+}
+```
+
+... it must be set using an array, like so:
+
+```
+$def->{Baz::CLASS}
+    ->argument('items', ['a', 'b', 'c']);
+```
 
 ### Class Overrides
 

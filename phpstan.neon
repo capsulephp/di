@@ -3,6 +3,7 @@ parameters:
     paths:
         - src
     ignoreErrors:
-        - "#no value type specified in iterable type array#"
         - "#function call_user_func expects callable#"
+        - "#ArrayValues::offset.* typehint specified#"
     checkGenericClassInNonGenericObjectType: false
+    checkMissingIterableValueType: false

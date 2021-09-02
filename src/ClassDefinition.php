@@ -110,6 +110,7 @@ class ClassDefinition extends Definition
         }
 
         $arguments = $this->constructorArguments($container);
+        $this->expandVariadic($arguments);
         $class = $this->id;
         return new $class(...$arguments);
     }
@@ -128,6 +129,43 @@ class ClassDefinition extends Definition
         return $arguments;
     }
 
+    protected function expandVariadic(array &$arguments) : void
+    {
+        if (count($arguments) < count($this->parameters)) {
+            return;
+        }
+
+        $lastParameter = end($this->parameters);
+
+        if ($lastParameter === false) {
+            return;
+        }
+
+        if (! $lastParameter->isVariadic()) {
+            return;
+        }
+
+        $lastArgument = end($arguments);
+
+        if (! is_array($lastArgument)) {
+            $type = gettype($lastArgument);
+            $position = $lastParameter->getPosition();
+            $name = $lastParameter->getName();
+
+            throw new Exception\NotAllowed(
+                "Variadic argument {$position} (\${$name}) "
+                . "for class definition '{$this->id}' is defined as {$type}, "
+                . "but should be an array of variadic values."
+            );
+        }
+
+        $values = array_pop($arguments);
+
+        foreach ($values as $value) {
+            $arguments[] = $value;
+        }
+    }
+
     protected function constructorArgument(
         Container $container,
         array &$arguments,
@@ -136,6 +174,7 @@ class ClassDefinition extends Definition
     {
         return $this->argumentByPosition($container, $arguments, $parameter)
             ?? $this->argumentByType($container, $arguments, $parameter)
+            ?? $this->argumentOptional($container, $arguments, $parameter)
             ?? $this->argumentMissing($container, $arguments, $parameter);
     }
 
@@ -191,16 +230,38 @@ class ClassDefinition extends Definition
         return null;
     }
 
+    protected function argumentOptional(
+        Container $container,
+        array &$arguments,
+        ReflectionParameter $parameter
+    ) : ?bool
+    {
+        if (! $parameter->isOptional()) {
+            return null;
+        }
+
+        if (count($arguments) === count($this->arguments)) {
+            // we have captured all the defined arguments,
+            // which may be less than the parameters count
+            return true;
+        }
+
+        $position = $parameter->getPosition();
+        $name = $parameter->getName();
+
+        throw new Exception\NotDefined(
+            "Optional argument {$position} (\${$name}) "
+            . "for class definition '{$this->id}' is not defined, "
+            . "but there are other defined arguments remaining."
+        );
+    }
+
     protected function argumentMissing(
         Container $container,
         array &$arguments,
         ReflectionParameter $parameter
     ) : ?bool
     {
-        if ($parameter->isOptional()) {
-            return true;
-        }
-
         $position = $parameter->getPosition();
         $name = $parameter->getName();
         $type = $parameter->getType();

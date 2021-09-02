@@ -55,7 +55,7 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return new ArrayIterator($this->values);
     }
 
-    protected function resolveValues(Container $container, array $values)
+    protected function resolveValues(Container $container, array $values) : array
     {
         $return = [];
 
@@ -66,7 +66,7 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return $return;
     }
 
-    protected function resolveValue(Container $container, mixed $value)
+    protected function resolveValue(Container $container, mixed $value) : mixed
     {
         if ($value instanceof Lazy) {
             return $value($container);

@@ -156,6 +156,36 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($baz1->std, $baz2->std);
     }
 
+    public function testArgument_missingIntercedingOptional()
+    {
+        $definition = new ClassDefinition(Fake\Gir::CLASS);
+        $definition->argument(0, 'val0');
+        $definition->argument(2, ['val2a', 'val2b', 'val2c']);
+
+        $this->expectException(Exception\NotDefined::CLASS);
+        $this->expectExceptionMessage("Optional argument 1 (\$arg1) for class definition 'Capsule\Di\Fake\Gir' is not defined, but there are other defined arguments remaining.");
+        $this->actual($definition);
+    }
+
+    public function testArgument_variadic()
+    {
+        $definition = new ClassDefinition(Fake\Gir::CLASS);
+        $expect = ['val2a', 'val2b', 'val2c'];
+        $definition->arguments([
+            'va10',
+            'val1',
+            $expect,
+        ]);
+        $actual = $this->actual($definition);
+
+        $this->assertSame($expect, $actual->arg2);
+
+        $definition->argument('arg2', 'not-an-array');
+        $this->expectException(Exception\NotAllowed::CLASS);
+        $this->expectExceptionMessage("Variadic argument 2 (\$arg2) for class definition 'Capsule\Di\Fake\Gir' is defined as string, but should be an array of variadic values.");
+        $this->actual($definition);
+    }
+
     public function testFactory()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
