@@ -12,7 +12,7 @@ the _Container_ reads from the _Definitions_.
 
 ## Environment Variables
 
-<code>env(*string* $varname[, *string* $vartype = null]) : Lazy\Env</code>
+<code>env(*string* $varname[, *string* $vartype = null]) : *Lazy\Env*</code>
 
 Resolves to the value of the `$varname` environment variable.
 
@@ -34,9 +34,39 @@ $def->{Foo::CLASS}
     );
 ```
 
+## Comma-Separated Environment Variables
+
+<code>csEnv(*string* $varname[, *string* $vartype = null]) : *Lazy\CsEnv*</code>
+
+Resolves to an array of comma-separated values from the `$varname` environment
+variable. This is useful when you have to read from a list of values via an
+environment string; for example:
+
+```
+NOTIFY_EMAILS="foo@example.com,bar@example.net,baz@example.org"
+```
+
+```php
+$def->{Notifier::CLASS}
+    ->argument(
+        'addresses',
+        $def->csEnv('NOTIFY_EMAILS') // str_getcsv(getenv('NOTIFY_EMAILS'))
+    );
+```
+
+You may optionally specify a type to cast all of the values to:
+
+```php
+$def->{IdList::CLASS}
+    ->argument(
+        'ids',
+        $def->csEnv('ID_LIST', 'int')
+    );
+```
+
 ## Any Callable
 
-<code>call(*callable* $callable) : Lazy\Call</code>
+<code>call(*callable* $callable) : *Lazy\Call*</code>
 
 Resolves to the result returned by a [callable](https://www.php.net/callable);
 the callable must have this signature ...
@@ -65,7 +95,7 @@ $def->{Foo::CLASS}
 
 ## Function Calls
 
-<code>functionCall(*string* $function, ...$arguments) : Lazy\FunctionCall</code>
+<code>functionCall(*string* $function, ...$arguments) : *Lazy\FunctionCall*</code>
 
 Resolves to the return of a function call.
 
@@ -82,7 +112,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## Static Method Calls
 
-<code>staticCall(*string* $class, *string* $method, ...$arguments) : Lazy\StaticCall</code>
+<code>staticCall(*string* $class, *string* $method, ...$arguments) : *Lazy\StaticCall*</code>
 
 Resolves to the return of a static method call.
 
@@ -98,7 +128,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## Shared Instances From The Container
 
-<code>get(*string* $id) : Lazy\Get</code>
+<code>get(*string* $id) : *Lazy\Get*</code>
 
 Resolves to an identified definition returned by `Container::get()`.
 
@@ -112,7 +142,7 @@ $def->{Foo::CLASS}
 
 ## Shared Instance Method Calls
 
-<code>getCall(*string* $id, *string* $method, ...$arguments) : Lazy\GetCall</code>
+<code>getCall(*string* $id, *string* $method, ...$arguments) : *Lazy\GetCall*</code>
 
 Resolves to a method call on an object returned by `Container::get()`.
 
@@ -144,7 +174,7 @@ $def->{Foo::CLASS}
 
 ## New Instance Method Calls
 
-<code>newCall(*string* $id, *string* $method, ...$arguments) : Lazy\NewCall</code>
+<code>newCall(*string* $id, *string* $method, ...$arguments) : *Lazy\NewCall*</code>
 
 Resolves to a method call on an object returned by `Container::new()`.
 
@@ -160,7 +190,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## Included Files
 
-<code>include(*string|Lazy* $file) : Lazy\IncludeFile</code>
+<code>include(*string|Lazy* $file) : *Lazy\IncludeFile*</code>
 
 Resolves to the result returned by including a file; failure to find the file
 will not terminate execution.
@@ -175,7 +205,7 @@ $def->{Foo::CLASS}
 
 ## Required Files
 
-<code>require(*string|Lazy* $file) : Lazy\RequireFile</code>
+<code>require(*string|Lazy* $file) : *Lazy\RequireFile*</code>
 
 Resolves to the result returned by requiring a file; failure to find the file
 will terminate execution.
@@ -190,7 +220,7 @@ $def->{Foo::CLASS}
 
 ## Array Values
 
-<code>array(array $values) : Lazy\ArrayValues</code>
+<code>array(*array* $values) : *Lazy\ArrayValues*</code>
 
 Resolves to an array, where each element has itself been lazy-resolved.
 

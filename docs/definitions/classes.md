@@ -115,7 +115,7 @@ class Baz
 
 ... it must be set using an array, like so:
 
-```
+```php
 $def->{Baz::CLASS}
     ->argument('items', ['a', 'b', 'c']);
 ```
@@ -169,7 +169,7 @@ The `factory()` may be _Lazy_:
 ```php
 $def->{Foo::CLASS}
     ->factory(
-        $def->newCall('FooFactory', 'newInstance')
+        $def->newCall(FooFactory::CLASS, 'newInstance')
     );
 ```
 
@@ -220,8 +220,8 @@ $def->{Foo::CLASS}
     ->method('wrap', 'baz', 'dib');
 ```
 
-Pass the method name as the first argument; the remaining variadic arguments
-will be passed to that method call. These arguments may be _Lazy_.
+Pass the method name as the first argument; the remaining arguments will be
+passed to that method call. These arguments may be _Lazy_.
 
 ### General Modification
 
@@ -239,10 +239,10 @@ For example:
 
 ```php
 $def->{ComplexSetup::CLASS}
-    ->modify(function (Container $container, ComplexSetup $object) {
+    ->modify(function (Container $container, ComplexSetup $object) : void {
         // complicated setup logic, then
         $object->finalize();
-    })
+    });
 ```
 
 ### Decorators
@@ -264,5 +264,5 @@ For example:
 $def->{Foo::CLASS}
     ->decorate(function (Container $container, Foo $foo) : DecoratedFoo {
         return new DecoratedFoo($foo);
-    })
+    });
 ```
