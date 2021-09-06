@@ -1,5 +1,9 @@
 # Change Log
 
+## 3.1.1
+
+- Fixed #4
+
 ## 3.1.0
 
 - _Definitions_ now extends _stdClass_ to explicitly allow dynamic properties.
