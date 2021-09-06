@@ -240,7 +240,7 @@ class ClassDefinition extends Definition
             return null;
         }
 
-        if (count($arguments) === count($this->arguments)) {
+        if (count($arguments) >= count($this->arguments)) {
             // we have captured all the defined arguments,
             // which may be less than the parameters count
             return true;

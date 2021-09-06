@@ -156,7 +156,14 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($baz1->std, $baz2->std);
     }
 
-    public function testArgument_missingIntercedingOptional()
+    public function test_issue_4()
+    {
+        $definition = new ClassDefinition(Fake\Irk::CLASS);
+        $definition->argument(1, 'arg1-value');
+        $this->assertInstanceOf(Fake\Irk::CLASS, $this->actual($definition));
+    }
+
+    public function testArgument_missingIntercedingOptional_variadic()
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
         $definition->argument(0, 'val0');
