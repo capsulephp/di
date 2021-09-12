@@ -30,7 +30,7 @@ Capsule does not offer:
     available speed increases are miniscule compared to other opportunities for
     optimization (e.g. database queries).
 
-- **File-bases configuration.**  Capsule configuration is defined exclusively
+- **File-based configuration.**  Capsule configuration is defined exclusively
     via object-oriented PHP code, not via Neon/YAML/XML files or PHP arrays.
     (As a corollary, there is no special configuration notation to learn for
     Capsule, only class methods.)
