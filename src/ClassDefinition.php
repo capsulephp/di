@@ -92,6 +92,12 @@ class ClassDefinition extends Definition
         return $this;
     }
 
+    public function property(string $name, mixed $value) : static
+    {
+        $this->extenders[] = [__FUNCTION__, [$name, $value]];
+        return $this;
+    }
+
     public function new(Container $container) : object
     {
         $object = $this->instantiate($container);
@@ -293,6 +299,10 @@ class ClassDefinition extends Definition
         list ($type, $spec) = $extender;
 
         switch ($type) {
+            case 'decorate':
+                $object = $spec($container, $object);
+                break;
+
             case 'method':
                 list ($method, $arguments) = $spec;
                 $object->$method(...$arguments);
@@ -302,8 +312,9 @@ class ClassDefinition extends Definition
                 $spec($container, $object);
                 break;
 
-            case 'decorate':
-                $object = $spec($container, $object);
+            case 'property':
+                list($prop, $value) = $spec;
+                $object->$prop = Lazy::resolveArgument($container, $value);
                 break;
         }
 

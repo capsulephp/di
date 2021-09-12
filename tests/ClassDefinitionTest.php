@@ -214,8 +214,10 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
             $foo->append('dib');
             return $foo;
         });
+        $definition->property('newProperty', 'newValue');
 
         $actual = $this->actual($definition);
         $this->assertSame('foobarbazdib', $actual->arg1);
+        $this->assertSame('newValue', $actual->newProperty);
     }
 }

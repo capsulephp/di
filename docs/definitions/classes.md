@@ -192,11 +192,11 @@ These "extender" methods will be applied to the object after initial
 construction (even if that construction was by `factory()`). You can specify
 them as many times as you like, and they will be applied in that order.
 
-### Setters and Initializers
+### Setter Injection
 
 Each call to `method()` indicates a method to call on the object after it is
 instantiated. The typical case is for setter injection, but it can be used for
-any post-construction initializer logic.
+any post-construction initializer logic using class methods.
 
 Given this class ...
 
@@ -227,6 +227,9 @@ passed to that method call. These arguments may be _Lazy_.
 
 Sometimes `method()` calls will not be enough; you may need more complex
 modification logic. In these cases, add a `modify()` call to the definition.
+The typical use is for modifying the obejct itself, but it can be used for any
+other kind of initializer logic.
+
 Pass a callable with this signature ...
 
 ```php
@@ -266,3 +269,15 @@ $def->{Foo::CLASS}
         return new DecoratedFoo($foo);
     });
 ```
+
+### Property Injection
+
+To set any publicly-accessible property after construction, call the
+`property()` method with a property name and value:
+
+```php
+$def->{Foo::CLASS}
+    ->property('propertyName', 'propValue');
+```
+
+The value may be _Lazy_ resolvable.
