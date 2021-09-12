@@ -12,10 +12,10 @@ Capsule is fully documented at <http://capsulephp.com>.
 
 Capsule offers the ability to:
 
-- create, modify, retain, and return objects and values;
-- configure or define that creation, modification, and retention logic;
+- create, modify, retain, and return objects and values via autowiring;
+- configure and define that creation, modification, and retention logic;
 - inject those objects and values into their dependent objects; and,
-- lazy-resolution of values and objects at instantiation time.
+- lazy-resolve values and objects at instantiation time.
 
 ## What Capsule Does Not Support
 
