@@ -22,18 +22,18 @@ Capsule offers the ability to:
 Capsule does not offer:
 
 - **Annotations.** Annotations tend to couple a service to a particular
-    container implementation; that kind of coupling is wise to be avoid on
-    principle.
+    container implementation; I think that kind of coupling is wise to be avoid
+    on principle.
 
 - **Caching and compiling.** These are nominally performance enhancers, but in
     my experience they are rarely necessary, and in those rare cases the
     available speed increases are miniscule compared to other opportunities for
-    optimization(e.g. database queries).
+    optimization (e.g. database queries).
 
-- **Configuration by files (per se).**  Capsule configuration is defined
-    exclusively via object-oriented PHP code, not via Neon/YAML/XML files or
-    PHP arrays. (As a corollary, there is no special configuration notation to
-    learn for Capsule, only class methods.)
+- **File-bases configuration.**  Capsule configuration is defined exclusively
+    via object-oriented PHP code, not via Neon/YAML/XML files or PHP arrays.
+    (As a corollary, there is no special configuration notation to learn for
+    Capsule, only class methods.)
 
 - **In-flight container modification.** This means you cannot set or reset new
     object or value definitions once a Capsule container is instantiated.
@@ -41,10 +41,11 @@ Capsule does not offer:
     what you deserve.)
 
 - **Invocation injection.** Also called method-call injection or action
-    injection, this seems outside the scope of a DI/IOC system.
+    injection, I think this feature lies outside the scope of a DI/IOC system.
 
-- **Tagging.** This too strikes me as being a little outside the scope of a
-    DI/IOC system.
+- **Tagging.** I am ambivalent toward tagging; while I think it is little
+    outside the scope of a DI/IOC system, I can see where others might find it
+    useful. Perhaps a future version of Capsule may include it.
 
 These missing features may be deal-breakers for some developers, in which case
 they have hundreds of autowiring and non-autowiring DI/IOC systems to choose
