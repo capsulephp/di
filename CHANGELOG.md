@@ -1,5 +1,9 @@
 # Change Log
 
+## 3.2.0
+
+- Add a `property()` extender to support property injection.
+
 ## 3.1.1
 
 - Fixed #4
