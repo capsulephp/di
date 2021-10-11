@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Capsule\Di;
 
 use Capsule\Di\Exception;
+use Capsule\Di\Lazy\Lazy as AnyLazy;
 use stdClass;
-use Lazy\Lazy as AnyLazy;
 
 class Definitions extends stdClass
 {
