@@ -8,7 +8,7 @@ use Capsule\Di\Container;
 class GetCall extends Lazy
 {
     public function __construct(
-        protected string $id,
+        protected string|Lazy $id,
         protected string $method,
         protected array $arguments)
     {
@@ -16,7 +16,8 @@ class GetCall extends Lazy
 
     public function __invoke(Container $container) : mixed
     {
+        $id = static::resolveArgument($container, $this->id);
         $arguments = static::resolveArguments($container, $this->arguments);
-        return $container->get($this->id)->{$this->method}(...$arguments);
+        return $container->get($id)->{$this->method}(...$arguments);
     }
 }

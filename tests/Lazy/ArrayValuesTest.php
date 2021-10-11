@@ -68,4 +68,32 @@ class ArrayValuesTest extends LazyTest
         $actual = $lazy($this->container);
         $this->assertSame($expect, $actual);
     }
+
+    public function testMerge()
+    {
+        $lazy = new ArrayValues([
+            'foo',
+            'bar',
+            'baz' => 'dib',
+        ]);
+
+        $lazy->merge([
+            'zim',
+            'gir',
+            'irk' => 'doom',
+        ]);
+
+        $expect = [
+            'foo',
+            'bar',
+            'baz' => 'dib',
+            'zim',
+            'gir',
+            'irk' => 'doom',
+        ];
+
+        $actual = $lazy($this->container);
+
+        $this->assertSame($expect, $actual);
+    }
 }

@@ -5,6 +5,7 @@ namespace Capsule\Di;
 
 use Capsule\Di\Exception;
 use stdClass;
+use Lazy\Lazy as AnyLazy;
 
 class Definitions extends stdClass
 {
@@ -43,6 +44,16 @@ class Definitions extends stdClass
         return new Lazy\Call($callable);
     }
 
+    public function callableGet(string|AnyLazy $id) : Lazy\CallableGet
+    {
+        return new Lazy\CallableGet($id);
+    }
+
+    public function callableNew(string|AnyLazy $id) : Lazy\CallableNew
+    {
+        return new Lazy\CallableNew($id);
+    }
+
     public function csEnv(string $varname, string $vartype = null) : Lazy\CsEnv
     {
         return new Lazy\CsEnv($varname, $vartype);
@@ -61,13 +72,13 @@ class Definitions extends stdClass
         return new Lazy\FunctionCall($function, $arguments);
     }
 
-    public function get(string $class) : Lazy\Get
+    public function get(string|AnyLazy $id) : Lazy\Get
     {
-        return new Lazy\Get($class);
+        return new Lazy\Get($id);
     }
 
     public function getCall(
-        string $class,
+        string|AnyLazy $class,
         string $method,
         mixed ...$arguments
     ) : Lazy\GetCall
@@ -75,13 +86,13 @@ class Definitions extends stdClass
         return new Lazy\GetCall($class, $method, $arguments);
     }
 
-    public function new(string $class) : Lazy\NewInstance
+    public function new(string|AnyLazy $id) : Lazy\NewInstance
     {
-        return new Lazy\NewInstance($class);
+        return new Lazy\NewInstance($id);
     }
 
     public function newCall(
-        string $class,
+        string|AnyLazy $class,
         string $method,
         mixed ...$arguments
     ) : Lazy\NewCall
@@ -90,21 +101,21 @@ class Definitions extends stdClass
     }
 
     public function include(
-        string|Lazy\Lazy $file
+        string|AnyLazy $file
     ) : Lazy\IncludeFile
     {
         return new Lazy\IncludeFile($file);
     }
 
     public function require(
-        string|Lazy\Lazy $file
+        string|AnyLazy $file
     ) : Lazy\RequireFile
     {
         return new Lazy\RequireFile($file);
     }
 
     public function staticCall(
-        string $class,
+        string|AnyLazy $class,
         string $method,
         mixed ...$arguments
     ) : Lazy\StaticCall

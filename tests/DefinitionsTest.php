@@ -102,6 +102,22 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testCallableGet()
+    {
+        $this->assertInstanceOf(
+            Lazy\CallableGet::CLASS,
+            $this->def->callableGet(Fake\Foo::CLASS)
+        );
+    }
+
+    public function testCallableNew()
+    {
+        $this->assertInstanceOf(
+            Lazy\CallableNew::CLASS,
+            $this->def->callableNew(Fake\Foo::CLASS)
+        );
+    }
+
     public function testCsEnv()
     {
         $this->assertInstanceOf(

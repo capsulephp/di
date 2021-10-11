@@ -16,7 +16,8 @@ class StaticCall extends Lazy
 
     public function __invoke(Container $container) : mixed
     {
+        $class = static::resolveArgument($container, $this->class);
         $arguments = static::resolveArguments($container, $this->arguments);
-        return call_user_func([$this->class, $this->method], ...$arguments);
+        return call_user_func([$class, $this->method], ...$arguments);
     }
 }

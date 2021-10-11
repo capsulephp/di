@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Container;
 
-class NewInstance extends Lazy
+class CallableGet extends Lazy
 {
     public function __construct(protected string|Lazy $id)
     {
@@ -13,7 +13,9 @@ class NewInstance extends Lazy
 
     public function __invoke(Container $container) : mixed
     {
-        $id = static::resolveArgument($container, $this->id);
-        return $container->new($id);
+        return function () use ($container) {
+            $id = static::resolveArgument($container, $this->id);
+            return $container->get($id);
+        };
     }
 }

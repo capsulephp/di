@@ -50,6 +50,17 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return count($this->values);
     }
 
+    public function merge(iterable $values) : void
+    {
+        foreach ($values as $key => $value) {
+            if (is_int($key)) {
+                $this->values[] = $value;
+            } else {
+                $this->values[$key] = $value;
+            }
+        }
+    }
+
     public function getIterator() : ArrayIterator
     {
         return new ArrayIterator($this->values);

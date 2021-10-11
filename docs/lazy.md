@@ -112,7 +112,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## Static Method Calls
 
-<code>staticCall(*string* $class, *string* $method, ...$arguments) : *Lazy\StaticCall*</code>
+<code>staticCall(*string|Lazy* $class, *string* $method, ...$arguments) : *Lazy\StaticCall*</code>
 
 Resolves to the return of a static method call.
 
@@ -128,7 +128,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## Shared Instances From The Container
 
-<code>get(*string* $id) : *Lazy\Get*</code>
+<code>get(*string|Lazy* $id) : *Lazy\Get*</code>
 
 Resolves to an identified definition returned by `Container::get()`.
 
@@ -142,7 +142,7 @@ $def->{Foo::CLASS}
 
 ## Shared Instance Method Calls
 
-<code>getCall(*string* $id, *string* $method, ...$arguments) : *Lazy\GetCall*</code>
+<code>getCall(*string|Lazy* $id, *string* $method, ...$arguments) : *Lazy\GetCall*</code>
 
 Resolves to a method call on an object returned by `Container::get()`.
 
@@ -158,7 +158,7 @@ Any or all of the `$arguments` themselves can be _Lazy_ as well.
 
 ## New Instances From The Container
 
-<code>new(*string* $id) : Lazy\NewInstance</code>
+<code>new(*string|Lazy* $id) : Lazy\NewInstance</code>
 
 Resolves to an identified definition returned by `Container::new()`.
 
@@ -174,7 +174,7 @@ $def->{Foo::CLASS}
 
 ## New Instance Method Calls
 
-<code>newCall(*string* $id, *string* $method, ...$arguments) : *Lazy\NewCall*</code>
+<code>newCall(*string|Lazy* $id, *string* $method, ...$arguments) : *Lazy\NewCall*</code>
 
 Resolves to a method call on an object returned by `Container::new()`.
 
@@ -187,6 +187,25 @@ $def->{Foo::CLASS}
 ```
 
 Any or all of the `$arguments` themselves can be _Lazy_ as well.
+
+## Callable Factories
+
+<code>callableGet(*string|Lazy* $id) : *Lazy\CallableGet*</code>
+
+<code>callableNew(*string|Lazy* $id) : *Lazy\CallableNew*</code>
+
+These resolve to a closure around `Container::get()` or `Container::new()`.
+Useful for providing factories to other containers or locators.
+
+```php
+$def->{Foo::CLASS}
+    ->argument(
+        'bar',
+        $def->callableGet(Bar::CLASS);
+    );
+
+// function () use ($container) { return $container->get(Bar::CLASS); }
+```
 
 ## Included Files
 

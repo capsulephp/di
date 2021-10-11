@@ -7,12 +7,13 @@ use Capsule\Di\Container;
 
 class Get extends Lazy
 {
-    public function __construct(protected string $id)
+    public function __construct(protected string|Lazy $id)
     {
     }
 
     public function __invoke(Container $container) : mixed
     {
-        return $container->get($this->id);
+        $id = static::resolveArgument($container, $this->id);
+        return $container->get($id);
     }
 }
