@@ -278,6 +278,38 @@ foreach ($def->listing as $key => $value) {
 }
 ```
 
+Finally, to merge any `iterable` into an existing _ArrayValues_ object, use its
+`merge()` method:
+
+```php
+$def->listing = $def->array([
+    'foo',
+    'bar',
+    'baz' => 'dib',
+]);
+
+$def->listing->merge([
+    'zim',
+    'gir',
+    'irk' => 'doom',
+]);
+
+/*
+$def->listing will now resolve to ...
+
+[
+    'foo',
+    'bar',
+    'baz' => 'dib',
+    'zim',
+    'gir',
+    'irk' => 'doom',
+]
+*/
+```
+
+The `merge()` method behaves just like [array_merge()](https://php.net/array_merge).
+
 ## Standalone Definitions
 
 Each definition itself is _Lazy_ and will resolve to a new instance of the
