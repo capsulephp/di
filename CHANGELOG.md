@@ -1,5 +1,23 @@
 # Change Log
 
+## NEXT
+
+- Add ArrayValues::merge()
+
+- Add Definitions::callableGet()
+
+- Add Definitions::callableNew()
+
+- Class IDs may now be string *or* Lazy in these Definitions methods:
+
+    - callableGet()
+    - callableNew()
+    - get()
+    - getCall()
+    - new()
+    - newCall()
+    - staticCall()
+
 ## 3.2.0
 
 - Add a `property()` extender to support property injection.
