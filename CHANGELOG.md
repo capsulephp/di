@@ -1,6 +1,6 @@
 # Change Log
 
-## NEXT
+## 3.3.0
 
 - Add ArrayValues::merge()
 
@@ -8,7 +8,7 @@
 
 - Add Definitions::callableNew()
 
-- Class IDs may now be string *or* Lazy in these Definitions methods:
+- Entry IDs may now be string *or* Lazy in these Definitions methods:
 
     - callableGet()
     - callableNew()
