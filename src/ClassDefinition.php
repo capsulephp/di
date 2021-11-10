@@ -252,14 +252,8 @@ class ClassDefinition extends Definition
             return true;
         }
 
-        $position = $parameter->getPosition();
-        $name = $parameter->getName();
-
-        throw new Exception\NotDefined(
-            "Optional argument {$position} (\${$name}) "
-            . "for class definition '{$this->id}' is not defined, "
-            . "but there are other defined arguments remaining."
-        );
+        $arguments[] = $parameter->getDefaultValue();
+        return true;
     }
 
     protected function argumentMissing(

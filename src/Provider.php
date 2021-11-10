@@ -5,5 +5,5 @@ namespace Capsule\Di;
 
 interface Provider
 {
-	public function provide(Definitions $definitions) : void;
+    public function provide(Definitions $definitions) : void;
 }

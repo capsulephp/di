@@ -163,15 +163,12 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Fake\Irk::CLASS, $this->actual($definition));
     }
 
-    public function testArgument_missingIntercedingOptional_variadic()
+    public function testArgument_optional()
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
         $definition->argument(0, 'val0');
         $definition->argument(2, ['val2a', 'val2b', 'val2c']);
-
-        $this->expectException(Exception\NotDefined::CLASS);
-        $this->expectExceptionMessage("Optional argument 1 (\$arg1) for class definition 'Capsule\Di\Fake\Gir' is not defined, but there are other defined arguments remaining.");
-        $this->actual($definition);
+        $this->assertInstanceOf(Fake\Gir::CLASS, $this->actual($definition));
     }
 
     public function testArgument_variadic()
