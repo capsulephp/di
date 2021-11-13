@@ -28,7 +28,7 @@ class Definitions extends stdClass
         }
 
         if (class_exists($type)) {
-            return new ClassDefinition($type);
+            return (new ClassDefinition($type))->inherit($this);
         }
 
         return null;

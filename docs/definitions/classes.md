@@ -120,6 +120,10 @@ $def->{Baz::CLASS}
     ->argument('items', ['a', 'b', 'c']);
 ```
 
+#### Inherited Arguments
+
+TBD
+
 ### Class Overrides
 
 If you like, you can specify an alternative class to use for instantiation

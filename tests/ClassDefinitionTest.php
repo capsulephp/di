@@ -217,4 +217,45 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('foobarbazdib', $actual->arg1);
         $this->assertSame('newValue', $actual->newProperty);
     }
+
+    public function testInherit()
+    {
+        $def = $this->definitions;
+
+        $def->{Fake\Foo::CLASS}
+            ->argument('arg1', 'parent');
+
+        $def->{Fake\FooFoo::CLASS}
+            ->inherit($def)
+            ->argument('arg2', 'child');
+
+        $actual = $this->container->new(Fake\FooFoo::CLASS);
+        $this->assertSame('parent', $actual->arg1);
+        $this->assertSame('child', $actual->arg2);
+
+        $actual = $this->container->new(Fake\FooFooFoo::CLASS);
+        $this->assertSame('parent', $actual->arg1);
+        $this->assertSame('child', $actual->arg2);
+    }
+
+    public function testInherit_disabled()
+    {
+        $def = $this->definitions;
+
+        $def->{Fake\Foo::CLASS}
+            ->argument('arg1', 'parent');
+
+        $def->{Fake\FooFoo::CLASS}
+            ->inherit(null)
+            ->argument('arg2', 'child');
+
+        $container = new Container($def);
+
+        $this->expectException(Exception\NotDefined::CLASS);
+        $this->expectExceptionMessage(
+            "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\FooFoo' is not defined."
+        );
+
+        $this->container->new(Fake\FooFoo::CLASS);
+    }
 }

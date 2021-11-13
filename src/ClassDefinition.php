@@ -22,6 +22,10 @@ class ClassDefinition extends Definition
 
     protected array $parameterNames = [];
 
+    protected ?Definition $inherit = null;
+
+    protected ?array $inheritedArguments = null;
+
     public function __construct(protected string $id)
     {
         if (! class_exists($this->id)) {
@@ -40,6 +44,19 @@ class ClassDefinition extends Definition
         foreach ($this->parameters as $i => $parameter) {
             $this->parameterNames[$parameter->getName()] = $i;
         }
+    }
+
+    public function inherit(?Definitions $def) : static
+    {
+        $parent = get_parent_class($this->id);
+
+        if ($def === null || $parent === false) {
+            $this->inherit = null;
+            return $this;
+        }
+
+        $this->inherit = $def->$parent;
+        return $this;
     }
 
     public function argument(int|string $parameter, mixed $argument) : static
@@ -121,8 +138,21 @@ class ClassDefinition extends Definition
         return new $class(...$arguments);
     }
 
+    protected function receiveInheritance(Container $container) : void
+    {
+        if ($this->inheritedArguments !== null) {
+            return;
+        }
+
+        $this->inheritedArguments = ($this->inherit === null)
+            ? []
+            : $this->inherit->constructorArguments($container);
+    }
+
     protected function constructorArguments(Container $container) : array
     {
+        $this->receiveInheritance($container);
+
         $arguments = [];
 
         foreach ($this->parameters as $parameter) {
@@ -180,6 +210,7 @@ class ClassDefinition extends Definition
     {
         return $this->argumentByPosition($container, $arguments, $parameter)
             ?? $this->argumentByType($container, $arguments, $parameter)
+            ?? $this->argumentInherited($container, $arguments, $parameter)
             ?? $this->argumentOptional($container, $arguments, $parameter)
             ?? $this->argumentMissing($container, $arguments, $parameter);
     }
@@ -230,6 +261,22 @@ class ClassDefinition extends Definition
         // implicit
         if ($container->has($type)) {
             $arguments[] = $container->get($type);
+            return false;
+        }
+
+        return null;
+    }
+
+    protected function argumentInherited(
+        Container $container,
+        array &$arguments,
+        ReflectionParameter $parameter
+    ) : ?bool
+    {
+        $position = $parameter->getPosition();
+
+        if (array_key_exists($position, $this->inheritedArguments)) {
+            $arguments[] = $this->inheritedArguments[$position];
             return false;
         }
 
