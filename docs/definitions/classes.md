@@ -56,7 +56,7 @@ $def->{Foo::CLASS}
 ```
 
 **Among named and positional arguments referring to the same parameter, a later
-argument one takes precedence over an earlier one.** For example:
+argument replaces an earlier one.** For example:
 
 ```php
 $def->{Foo::CLASS}
@@ -149,13 +149,13 @@ $def->{Foo::CLASS}
 ```
 
 ... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in this
-case, it will be `'value1`).
+case, it will be `'value1'`).
 
-You can always override any or all inherited values by using `arguments()` or
-`argument()` on the _Definition_ for the child class.
+You can override any or all inherited values by using `argument()` or
+`arguments()` on the _Definition_ for the child class.
 
 If you want to disable or interrupt inheritance, call `inherit(null)` on the
-_Definition_:
+child _Definition_:
 
 ```php
 $def->{Foo::CLASS}
