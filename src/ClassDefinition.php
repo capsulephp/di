@@ -169,9 +169,9 @@ class ClassDefinition extends Definition
 
         foreach ($this->parameters as $position => $parameter) {
             $this->collatePositionalArgument($position, $parameter)
-                or $this->collateTypedArgument($position, $parameter, $container)
-                or $this->collateInheritedArgument($position, $parameter, $inherited)
-                or $this->collateOptionalArgument($position, $parameter);
+                || $this->collateTypedArgument($position, $parameter, $container)
+                || $this->collateInheritedArgument($position, $parameter, $inherited)
+                || $this->collateOptionalArgument($position, $parameter);
         }
     }
 
