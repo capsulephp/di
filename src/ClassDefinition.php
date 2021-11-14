@@ -134,8 +134,15 @@ class ClassDefinition extends Definition
 
         $arguments = $this->getCollatedArguments($container);
 
-        foreach ($arguments as &$argument) {
-            $argument = Lazy::resolveArgument($container, $argument);
+        foreach ($this->parameters as $position => $parameter) {
+            if (! array_key_exists($position, $arguments)) {
+                throw $this->argumentNotDefined($position, $parameter);
+            }
+
+            $arguments[$position] = Lazy::resolveArgument(
+                $container,
+                $arguments[$position]
+            );
         }
 
         $this->expandVariadic($arguments);
@@ -160,31 +167,30 @@ class ClassDefinition extends Definition
             ? []
             : $this->inherit->getCollatedArguments($container);
 
-        foreach ($this->parameters as $parameter) {
-            $this->collatePositionalArgument($parameter)
-                or $this->collateTypedArgument($parameter, $container)
-                or $this->collateInheritedArgument($parameter, $inherited)
-                or $this->collateOptionalArgument($parameter)
-                or $this->collateMissingArgument($parameter);
+        foreach ($this->parameters as $position => $parameter) {
+            $this->collatePositionalArgument($position, $parameter)
+                or $this->collateTypedArgument($position, $parameter, $container)
+                or $this->collateInheritedArgument($position, $parameter, $inherited)
+                or $this->collateOptionalArgument($position, $parameter);
         }
     }
 
     protected function collatePositionalArgument(
+        int $position,
         ReflectionParameter $parameter
     ) : bool
     {
-        $position = $parameter->getPosition();
-
         if (! array_key_exists($position, $this->arguments)) {
             return false;
         }
 
-        $this->collatedArguments[] = $this->arguments[$position];
+        $this->collatedArguments[$position] = $this->arguments[$position];
 
         return true;
     }
 
     protected function collateTypedArgument(
+        int $position,
         ReflectionParameter $parameter,
         Container $container
     ) : bool
@@ -199,13 +205,13 @@ class ClassDefinition extends Definition
 
         // explicit
         if (array_key_exists($type, $this->arguments)) {
-            $this->collatedArguments[] = $this->arguments[$type];
+            $this->collatedArguments[$position] = $this->arguments[$type];
             return true;
         }
 
         // implicit
         if ($container->has($type)) {
-            $this->collatedArguments[] = $container->get($type);
+            $this->collatedArguments[$position] = $container->get($type);
             return true;
         }
 
@@ -213,14 +219,13 @@ class ClassDefinition extends Definition
     }
 
     protected function collateInheritedArgument(
+        int $position,
         ReflectionParameter $parameter,
         array $inherited
     ) : bool
     {
-        $position = $parameter->getPosition();
-
         if (array_key_exists($position, $inherited)) {
-            $this->collatedArguments[] = $inherited[$position];
+            $this->collatedArguments[$position] = $inherited[$position];
             return true;
         }
 
@@ -228,6 +233,7 @@ class ClassDefinition extends Definition
     }
 
     protected function collateOptionalArgument(
+        int $position,
         ReflectionParameter $parameter
     ) : bool
     {
@@ -239,22 +245,22 @@ class ClassDefinition extends Definition
             ? []
             : $parameter->getDefaultValue();
 
-        $this->collatedArguments[] = $value;
+        $this->collatedArguments[$position] = $value;
         return true;
     }
 
-    protected function collateMissingArgument(
+    protected function argumentNotDefined(
+        int $position,
         ReflectionParameter $parameter
-    ) : bool
+    ) : Exception\NotDefined
     {
-        $position = $parameter->getPosition();
         $name = $parameter->getName();
         $type = $parameter->getType();
         $prefix = ($type instanceof ReflectionUnionType)
             ? "Union typed"
             : "Required";
 
-        throw new Exception\NotDefined(
+        return new Exception\NotDefined(
             "{$prefix} argument {$position} (\${$name}) "
             . "for class definition '{$this->id}' is not defined."
         );
