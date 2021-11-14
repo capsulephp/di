@@ -24,7 +24,7 @@ class ClassDefinition extends Definition
 
     protected ?Definition $inherit = null;
 
-    protected ?array $inheritedArguments = null;
+    protected ?array $collatedArguments = null;
 
     public function __construct(protected string $id)
     {
@@ -132,37 +132,132 @@ class ClassDefinition extends Definition
             return $container->new($this->class);
         }
 
-        $arguments = $this->constructorArguments($container);
+        $arguments = $this->getCollatedArguments($container);
+
+        foreach ($arguments as &$argument) {
+            $argument = Lazy::resolveArgument($container, $argument);
+        }
+
         $this->expandVariadic($arguments);
         $class = $this->id;
         return new $class(...$arguments);
     }
 
-    protected function receiveInheritance(Container $container) : void
+    protected function getCollatedArguments(Container $container) : array
     {
-        if ($this->inheritedArguments !== null) {
-            return;
+        if ($this->collatedArguments === null) {
+            $this->collateArguments($container);
         }
 
-        $this->inheritedArguments = ($this->inherit === null)
-            ? []
-            : $this->inherit->constructorArguments($container);
+        return $this->collatedArguments;
     }
 
-    protected function constructorArguments(Container $container) : array
+    protected function collateArguments(Container $container) : void
     {
-        $this->receiveInheritance($container);
+        $this->collatedArguments = [];
 
-        $arguments = [];
+        $inherited = ($this->inherit === null)
+            ? []
+            : $this->inherit->getCollatedArguments($container);
 
         foreach ($this->parameters as $parameter) {
-            $break = $this->constructorArgument($container, $arguments, $parameter);
-            if ($break === true) {
-                break;
-            }
+            $this->collatePositionalArgument($parameter)
+                or $this->collateTypedArgument($parameter, $container)
+                or $this->collateInheritedArgument($parameter, $inherited)
+                or $this->collateOptionalArgument($parameter)
+                or $this->collateMissingArgument($parameter);
+        }
+    }
+
+    protected function collatePositionalArgument(
+        ReflectionParameter $parameter
+    ) : bool
+    {
+        $position = $parameter->getPosition();
+
+        if (! array_key_exists($position, $this->arguments)) {
+            return false;
         }
 
-        return $arguments;
+        $this->collatedArguments[] = $this->arguments[$position];
+
+        return true;
+    }
+
+    protected function collateTypedArgument(
+        ReflectionParameter $parameter,
+        Container $container
+    ) : bool
+    {
+        $type = $parameter->getType();
+
+        if (! $type instanceof ReflectionNamedType) {
+            return false;
+        }
+
+        $type = $type->getName();
+
+        // explicit
+        if (array_key_exists($type, $this->arguments)) {
+            $this->collatedArguments[] = $this->arguments[$type];
+            return true;
+        }
+
+        // implicit
+        if ($container->has($type)) {
+            $this->collatedArguments[] = $container->get($type);
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function collateInheritedArgument(
+        ReflectionParameter $parameter,
+        array $inherited
+    ) : bool
+    {
+        $position = $parameter->getPosition();
+
+        if (array_key_exists($position, $inherited)) {
+            $this->collatedArguments[] = $inherited[$position];
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function collateOptionalArgument(
+        ReflectionParameter $parameter
+    ) : bool
+    {
+        if (! $parameter->isOptional()) {
+            return false;
+        }
+
+        $value = $parameter->isVariadic()
+            ? []
+            : $parameter->getDefaultValue();
+
+        $this->collatedArguments[] = $value;
+        return true;
+    }
+
+    protected function collateMissingArgument(
+        ReflectionParameter $parameter
+    ) : bool
+    {
+        $position = $parameter->getPosition();
+        $name = $parameter->getName();
+        $type = $parameter->getType();
+        $prefix = ($type instanceof ReflectionUnionType)
+            ? "Union typed"
+            : "Required";
+
+        throw new Exception\NotDefined(
+            "{$prefix} argument {$position} (\${$name}) "
+            . "for class definition '{$this->id}' is not defined."
+        );
     }
 
     protected function expandVariadic(array &$arguments) : void
@@ -200,126 +295,6 @@ class ClassDefinition extends Definition
         foreach ($values as $value) {
             $arguments[] = $value;
         }
-    }
-
-    protected function constructorArgument(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        return $this->argumentByPosition($container, $arguments, $parameter)
-            ?? $this->argumentByType($container, $arguments, $parameter)
-            ?? $this->argumentInherited($container, $arguments, $parameter)
-            ?? $this->argumentOptional($container, $arguments, $parameter)
-            ?? $this->argumentMissing($container, $arguments, $parameter);
-    }
-
-    protected function argumentByPosition(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        $position = $parameter->getPosition();
-
-        if (! array_key_exists($position, $this->arguments)) {
-            return null;
-        }
-
-        $arguments[] = Lazy::resolveArgument(
-            $container,
-            $this->arguments[$position]
-        );
-
-        return false;
-    }
-
-    protected function argumentByType(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        $type = $parameter->getType();
-
-        if (! $type instanceof ReflectionNamedType) {
-            return null;
-        }
-
-        $type = $type->getName();
-
-        // explicit
-        if (array_key_exists($type, $this->arguments)) {
-            $arguments[] = Lazy::resolveArgument(
-                $container,
-                $this->arguments[$type]
-            );
-            return false;
-        }
-
-        // implicit
-        if ($container->has($type)) {
-            $arguments[] = $container->get($type);
-            return false;
-        }
-
-        return null;
-    }
-
-    protected function argumentInherited(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        $position = $parameter->getPosition();
-
-        if (array_key_exists($position, $this->inheritedArguments)) {
-            $arguments[] = $this->inheritedArguments[$position];
-            return false;
-        }
-
-        return null;
-    }
-
-    protected function argumentOptional(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        if (! $parameter->isOptional()) {
-            return null;
-        }
-
-        if (count($arguments) >= count($this->arguments)) {
-            // we have captured all the defined arguments,
-            // which may be less than the parameters count
-            return true;
-        }
-
-        $arguments[] = $parameter->getDefaultValue();
-        return true;
-    }
-
-    protected function argumentMissing(
-        Container $container,
-        array &$arguments,
-        ReflectionParameter $parameter
-    ) : ?bool
-    {
-        $position = $parameter->getPosition();
-        $name = $parameter->getName();
-        $type = $parameter->getType();
-        $prefix = ($type instanceof ReflectionUnionType)
-            ? "Union typed"
-            : "Required";
-
-        throw new Exception\NotDefined(
-            "{$prefix} argument {$position} (\${$name}) "
-            . "for class definition '{$this->id}' is not defined."
-        );
     }
 
     protected function applyExtenders(Container $container, object $object) : object

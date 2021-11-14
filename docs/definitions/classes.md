@@ -122,7 +122,48 @@ $def->{Baz::CLASS}
 
 #### Inherited Arguments
 
-TBD
+By default, the _Definition_ for a class will "inherit" the defined arguments of
+its parent classes. Inheritance of arguments works all the way up to the
+highest parent.
+
+For example, given these classes ...
+
+```php
+class Foo
+{
+    public function __construct(string $arg0)
+    {
+    }
+}
+
+class Bar extends Foo
+{
+}
+```
+
+... and this _Definition_ ...
+
+```php
+$def->{Foo::CLASS}
+    ->argument(0, 'value1')
+```
+
+... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in this
+case, it will be `'value1`).
+
+You can always override any or all inherited values by using `arguments()` or
+`argument()` on the _Definition_ for the child class.
+
+If you want to disable or interrupt inheritance, call `inherit(null)` on the
+_Definition_:
+
+```php
+$def->{Foo::CLASS}
+    ->argument(0, 'value1')
+
+$def->{Bar::CLASS}
+    ->inherit(null);
+```
 
 ### Class Overrides
 

@@ -181,10 +181,28 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
             $expect,
         ]);
         $actual = $this->actual($definition);
-
         $this->assertSame($expect, $actual->arg2);
+    }
 
-        $definition->argument('arg2', 'not-an-array');
+    public function testArgument_variadicOmitted()
+    {
+        $definition = new ClassDefinition(Fake\Gir::CLASS);
+        $definition->arguments([
+            'va10',
+            'val1',
+        ]);
+        $actual = $this->actual($definition);
+        $this->assertSame([], $actual->arg2);
+    }
+
+    public function testArgument_variadicWrong()
+    {
+        $definition = new ClassDefinition(Fake\Gir::CLASS);
+        $definition->arguments([
+            'va10',
+            'val1',
+            'not-an-array',
+        ]);
         $this->expectException(Exception\NotAllowed::CLASS);
         $this->expectExceptionMessage("Variadic argument 2 (\$arg2) for class definition 'Capsule\Di\Fake\Gir' is defined as string, but should be an array of variadic values.");
         $this->actual($definition);

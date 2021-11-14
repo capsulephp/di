@@ -4,6 +4,7 @@ parameters:
         - src
     ignoreErrors:
         - "#function call_user_func expects callable#"
-        - "#ArrayValues::offset.* typehint specified#"
+        - "#ArrayValues::offset.* type specified#"
+        - "#method Capsule\\\\Di\\\\Container::(new|get)\\(\\) expects string, mixed given#"
     checkGenericClassInNonGenericObjectType: false
     checkMissingIterableValueType: false

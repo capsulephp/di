@@ -8,7 +8,7 @@ use Capsule\Di\Container;
 class StaticCall extends Lazy
 {
     public function __construct(
-        protected string $class,
+        protected Lazy|string $class,
         protected string $method,
         protected array $arguments
     ) {
