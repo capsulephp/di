@@ -256,13 +256,31 @@ class ClassDefinition extends Definition
     {
         $name = $parameter->getName();
         $type = $parameter->getType();
-        $prefix = ($type instanceof ReflectionUnionType)
-            ? "Union typed"
-            : "Required";
+
+        if ($type instanceof ReflectionUnionType) {
+            return new Exception\NotDefined(
+                "Union typed argument {$position} (\${$name}) "
+                . "for class definition '{$this->id}' is not defined."
+            );
+        }
+
+        $hint = $type->getName();
+
+        if (
+            $type->isBuiltin()
+            || class_exists($hint)
+            || interface_exists($hint))
+        {
+            return new Exception\NotDefined(
+                "Required argument {$position} (\${$name}) "
+                . "for class definition '{$this->id}' is not defined."
+            );
+        }
 
         return new Exception\NotDefined(
-            "{$prefix} argument {$position} (\${$name}) "
-            . "for class definition '{$this->id}' is not defined."
+                "Required argument {$position} (\${$name}) "
+                . "for class definition '{$this->id}' is typehinted as "
+                . "{$hint}, which does not exist."
         );
     }
 

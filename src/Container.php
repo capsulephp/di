@@ -38,7 +38,7 @@ class Container implements ContainerInterface
 
     public function has(string $id) : bool
     {
-        if (isset($this->definitions->id)) {
+        if (isset($this->definitions->$id)) {
             return true;
         }
 

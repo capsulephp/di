@@ -136,6 +136,16 @@ class ClassDefinitionTest extends \PHPUnit\Framework\TestCase
         $this->actual($definition);
     }
 
+    public function testArgument_typeDoesNotExist()
+    {
+        $definition = new ClassDefinition(Fake\BadHint::CLASS);
+        $this->expectException(Exception\NotDefined::CLASS);
+        $this->expectExceptionMessage(
+            "Required argument 0 (\$nonesuch) for class definition 'Capsule\Di\Fake\BadHint' is typehinted as Capsule\Di\Fake\Nonesuch, which does not exist."
+        );
+        $this->actual($definition);
+    }
+
     public function testArgument_unionType()
     {
         $definition = new ClassDefinition(Fake\Zim::CLASS);
