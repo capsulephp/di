@@ -5,10 +5,13 @@ namespace Capsule\Di;
 
 use Capsule\Di\Lazy\Lazy;
 use Psr\Container\ContainerInterface;
+use ReflectionClass;
 
 class Container implements ContainerInterface
 {
     protected array $registry = [];
+
+    protected array $instantiable = [];
 
     /**
      * @param Provider[] $providers
@@ -35,7 +38,26 @@ class Container implements ContainerInterface
 
     public function has(string $id) : bool
     {
-        return isset($this->definitions->$id) || class_exists($id);
+        if (isset($this->definitions->id)) {
+            return true;
+        }
+
+        if (! isset($this->instantiable[$id])) {
+            $this->instantiable[$id] = $this->isInstantiable($id);
+        }
+
+        return $this->instantiable[$id];
+    }
+
+    protected function isInstantiable(string $id) : bool
+    {
+        if (! class_exists($id)) {
+            return false;
+        }
+
+        $rc = new ReflectionClass($id);
+        $this->instantiable[$id] = $rc->isInstantiable();
+        return $this->instantiable[$id];
     }
 
     public function new(string $id) : mixed
