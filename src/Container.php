@@ -38,15 +38,14 @@ class Container implements ContainerInterface
 
     public function has(string $id) : bool
     {
-        if ($this->isInstantiable($id)) {
+        if (
+            isset($this->definitions->$id)
+            && $this->definitions->$id instanceof Definition
+        ) {
             return true;
         }
 
-        if (! isset($this->definitions->$id)) {
-            return false;
-        }
-
-        return ! $this->definitions->$id instanceof Definition;
+        return $this->isInstantiable($id);
     }
 
     protected function isInstantiable(string $id) : bool
@@ -55,7 +54,7 @@ class Container implements ContainerInterface
             return $this->instantiable[$id];
         }
 
-        if (! class_exists($id)) {
+        if (! class_exists($id) && ! interface_exists($id)) {
             $this->instantiable[$id] = false;
             return false;
         }
