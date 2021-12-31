@@ -38,22 +38,27 @@ class Container implements ContainerInterface
 
     public function has(string $id) : bool
     {
-        if (isset($this->has[$id])) {
-            return $this->has[$id];
-        }
-
-        if (! isset($this->definitions->$id)) {
-            $this->has[$id] = $this->hasImplicit($id);
-        } elseif ($this->definitions->$id instanceof Definition) {
-            $this->has[$id] = $this->definitions->$id->isInstantiable($this);
-        } else {
-            $this->has[$id] = true;
+        if (! isset($this->has[$id])) {
+            $this->has[$id] = $this->find($id);
         }
 
         return $this->has[$id];
     }
 
-    protected function hasImplicit(string $id) : bool
+    protected function find(string $id) : bool
+    {
+        if (! isset($this->definitions->$id)) {
+            return $this->findImplicit($id);
+        }
+
+        if ($this->definitions->$id instanceof Definition) {
+            return $this->definitions->$id->isInstantiable($this);
+        }
+
+        return true;
+    }
+
+    protected function findImplicit(string $id) : bool
     {
         if (! class_exists($id) && ! interface_exists($id)) {
             return false;
