@@ -287,10 +287,6 @@ class ClassDefinition extends Definition
 
     protected function expandVariadic(array &$arguments) : void
     {
-        if (count($arguments) < count($this->parameters)) {
-            return;
-        }
-
         $lastParameter = end($this->parameters);
 
         if ($lastParameter === false) {

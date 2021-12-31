@@ -17,6 +17,7 @@ class ClassDefinitionTest extends DefinitionTest
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
         $definition->class(stdClass::CLASS);
+        $this->assertTrue($definition->isInstantiable($this->container));
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
@@ -220,6 +221,7 @@ class ClassDefinitionTest extends DefinitionTest
         $definition->factory(function ($container) {
             return new stdClass();
         });
+        $this->assertTrue($definition->isInstantiable($this->container));
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
