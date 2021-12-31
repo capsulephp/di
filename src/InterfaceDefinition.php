@@ -26,7 +26,7 @@ class InterfaceDefinition extends Definition
         return $this;
     }
 
-    public function new(Container $container) : object
+    protected function instantiate(Container $container) : object
     {
         if ($this->factory !== null) {
             $factory = Lazy::resolveArgument($container, $this->factory);

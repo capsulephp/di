@@ -5,23 +5,8 @@ namespace Capsule\Di;
 
 use stdClass;
 
-class InterfaceDefinitionTest extends \PHPUnit\Framework\TestCase
+class InterfaceDefinitionTest extends DefinitionTest
 {
-    protected Container $container;
-
-    protected Definitions $definitions;
-
-    protected function setUp() : void
-    {
-        $this->definitions = new Definitions();
-        $this->container = new Container($this->definitions);
-    }
-
-    protected function actual(InterfaceDefinition $definition)
-    {
-        return $definition->new($this->container, $this->definitions);
-    }
-
     public function testConstructorNotInterface()
     {
         $this->expectException(Exception\NotFound::CLASS);
@@ -56,8 +41,11 @@ class InterfaceDefinitionTest extends \PHPUnit\Framework\TestCase
     public function testClass_notDefined()
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
-        $this->expectException(Exception\NotDefined::CLASS);
-        $this->expectExceptionMessage("Class/factory for interface definition 'Capsule\Di\Fake\FooInterface' not set.");
-        $this->actual($definition);
+        $this->assertNotInstantiable($definition, [
+            [
+                Exception\NotDefined::CLASS,
+                "Class/factory for interface definition 'Capsule\Di\Fake\FooInterface' not set.",
+            ]
+        ]);
     }
 }

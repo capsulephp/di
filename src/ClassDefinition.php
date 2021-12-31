@@ -33,6 +33,7 @@ class ClassDefinition extends Definition
         }
 
         $reflection = new ReflectionClass($this->id);
+        $this->isInstantiable = $reflection->isInstantiable();
         $constructor = $reflection->getConstructor();
 
         if ($constructor === null) {
@@ -117,7 +118,7 @@ class ClassDefinition extends Definition
 
     public function new(Container $container) : object
     {
-        $object = $this->instantiate($container);
+        $object = parent::new($container);
         return $this->applyExtenders($container, $object);
     }
 

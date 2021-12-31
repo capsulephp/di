@@ -11,7 +11,7 @@ class Container implements ContainerInterface
 {
     protected array $registry = [];
 
-    protected array $instantiable = [];
+    protected array $has = [];
 
     /**
      * @param Provider[] $providers
@@ -38,30 +38,29 @@ class Container implements ContainerInterface
 
     public function has(string $id) : bool
     {
-        if (
-            isset($this->definitions->$id)
-            && $this->definitions->$id instanceof Definition
-        ) {
-            return true;
+        if (isset($this->has[$id])) {
+            return $this->has[$id];
         }
 
-        return $this->isInstantiable($id);
+        if (! isset($this->definitions->$id)) {
+            $this->has[$id] = $this->hasImplicit($id);
+        } elseif ($this->definitions->$id instanceof Definition) {
+            $this->has[$id] = $this->definitions->$id->isInstantiable($this);
+        } else {
+            $this->has[$id] = true;
+        }
+
+        return $this->has[$id];
     }
 
-    protected function isInstantiable(string $id) : bool
+    protected function hasImplicit(string $id) : bool
     {
-        if (isset($this->instantiable[$id])) {
-            return $this->instantiable[$id];
-        }
-
         if (! class_exists($id) && ! interface_exists($id)) {
-            $this->instantiable[$id] = false;
             return false;
         }
 
         $reflection = new ReflectionClass($id);
-        $this->instantiable[$id] = $reflection->isInstantiable();
-        return $this->instantiable[$id];
+        return $reflection->isInstantiable();
     }
 
     public function new(string $id) : mixed

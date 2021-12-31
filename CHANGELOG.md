@@ -6,10 +6,19 @@
 
 - By default, child classes now inherit the constructor arguments of their
   parent class. This means you do not need to re-define the child class
-  arguments if you want them to be the same as the parent.You can still
+  arguments if you want them to be the same as the parent. You can still
   override arguments in the child class definition. Does not apply to property
   injection or setters, or to factory, or to class() overrides. To turn off
   inherited arguments for a class, call $def->{Foo::CLASS}->inherit(null).
+
+- Container::has() now indicates if an `$id` will return anything at all from
+  the Container, not merely if that specific `$id` definition exists. This is
+  to support things like like an abstract or an interface having a class or
+  factory associated with it.
+
+- Definition::new() now throws Exception\NotInstantatiated when an object cannot
+  be instantiated, with a previous exceptions stack indicating the chain of
+  causality.
 
 ## 3.3.0
 
