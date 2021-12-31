@@ -1,15 +1,13 @@
 # Change Log
 
-## NEXT
-
-- Better handling of optional arguments
+## 3.4.0
 
 - By default, child classes now inherit the constructor arguments of their
   parent class. This means you do not need to re-define the child class
   arguments if you want them to be the same as the parent. You can still
-  override arguments in the child class definition. Does not apply to property
-  injection or setters, or to factory, or to class() overrides. To turn off
-  inherited arguments for a class, call $def->{Foo::CLASS}->inherit(null).
+  override arguments in the child class definition. Does not apply to extended
+  class construction calls, or to factory(), or to class() overrides. To
+  disable or interrups argument inheritance, call $def->{Foo::CLASS}->inherit(null).
 
 - Container::has() now indicates if an `$id` will return anything at all from
   the Container, not merely if that specific `$id` definition exists. This is
@@ -19,6 +17,11 @@
 - Definition::new() now throws Exception\NotInstantatiated when an object cannot
   be instantiated, with a previous exceptions stack indicating the chain of
   causality.
+
+- Added methods ClassDefinintion::hasArgument(), getArgument(), and
+  refArgument() for examining and modifying argument values.
+
+- Better handling of optional arguments on class definitions.
 
 ## 3.3.0
 
