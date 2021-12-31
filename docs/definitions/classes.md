@@ -148,8 +148,8 @@ $def->{Foo::CLASS}
     ->argument(0, 'value1')
 ```
 
-... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in this
-case, it will be `'value1'`).
+... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in
+this case, it will be `'value1'`).
 
 You can override any or all inherited values by using `argument()` or
 `arguments()` on the _Definition_ for the child class.
@@ -167,8 +167,8 @@ $def->{Bar::CLASS}
 
 #### Argument Examination and References
 
-You can see if an argument has a value using `hasArgument()`, and retrieve the
-value of the argument using `getArgument()`.
+You can see if an argument value has been defined using `hasArgument()`, and
+retrieve the value of the argument using `getArgument()`.
 
 ```php
 if (! $def->{Foo::CLASS}->hasArgument('bar')) {
@@ -178,8 +178,8 @@ if (! $def->{Foo::CLASS}->hasArgument('bar')) {
 assert($def->{Foo::CLASS}->get('bar') === 'barval');
 ```
 
-You can also get a ***reference*** to the argument using `refArgument()`, so you
-can modify the argument in place without having to get it and re-set it.
+You can also get a ***reference*** to the argument value using `refArgument()`,
+so you can modify that value in place without having to get it and re-set it.
 
 ```php
 $def->{Foo::CLASS}->argument('bar', 'barval');
@@ -208,8 +208,9 @@ work for the typehint.
 
 Setting an alternative `class()` will cause the _Container_ to use the
 definition for that other class. In the above example, that means any
-_AbstractFoo_ arguments and extended construction logic will be ignored in
-favor of the _Foo_ object definition.
+_AbstractFoo_ extended construction logic will be ignored in favor of the _Foo_
+ object definition, although the _Foo_ definition will still inherit any
+ defined _AbstractFoo_ arguments.
 
 ### Factory Instantiation
 
