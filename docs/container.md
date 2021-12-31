@@ -21,7 +21,8 @@ $container = new Container($def);
 
 <code>get(*string* $id) : *mixed*</code>
 
-Returns a shared instance of the defined class. Multiple calls to `get()` return the same object.
+Returns a shared instance of the defined class. Multiple calls to `get()` return
+the same object.
 
 ```php
 $foo1 = $container->get(Foo::CLASS);
@@ -59,8 +60,8 @@ as the _Lazy_ will be re-evaluated on each call.
 
 <code>has(*string* $id) : *bool*</code>
 
-Returns `true` if the _Container_ has that identifier in its _Definitions_,
-or if the identifier is is an existing class; otherwise, `false`.
+Returns `true` if the _Container_ can successfully `get()` or `new()` the `$id`;
+otherwise, `false`.
 
 ```php
 $container->has(stdClass::CLASS); // true
@@ -73,7 +74,8 @@ $container->has('NoSuchClass'); // false
 
 <code>callableNew(*string* $id) : *callable*</code>
 
-These return a call to `get()` or `new()` wrapped in a closure. Useful for providing factories to other containers.
+These return a call to `get()` or `new()` wrapped in a closure. Useful for
+providing factories to other containers.
 
 ```php
 $callableGet = $container->callableGet(Foo::CLASS);
