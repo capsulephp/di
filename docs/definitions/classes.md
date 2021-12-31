@@ -209,8 +209,8 @@ work for the typehint.
 Setting an alternative `class()` will cause the _Container_ to use the
 definition for that other class. In the above example, that means any
 _AbstractFoo_ extended construction logic will be ignored in favor of the _Foo_
- object definition, although the _Foo_ definition will still inherit any
- defined _AbstractFoo_ arguments.
+object definition, although the _Foo_ definition will still inherit any
+defined _AbstractFoo_ arguments.
 
 ### Factory Instantiation
 
