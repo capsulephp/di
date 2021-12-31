@@ -7,8 +7,6 @@ use Capsule\Di\Lazy\Lazy;
 
 class InterfaceDefinition extends Definition
 {
-    protected ?string $class = null;
-
     public function __construct(protected string $id)
     {
         if (! interface_exists($id)) {

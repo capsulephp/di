@@ -8,6 +8,10 @@ use Throwable;
 
 abstract class Definition extends Lazy
 {
+    protected string $id;
+
+    protected ?string $class = null;
+
     protected mixed /* callable */ $factory = null;
 
     protected bool $isInstantiable = false;

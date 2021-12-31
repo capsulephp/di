@@ -25,7 +25,7 @@ class Env extends Lazy
         return $value;
     }
 
-    protected function getEnv() : mixed
+    protected function getEnv() : string
     {
         $env = getenv();
 

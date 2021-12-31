@@ -12,8 +12,6 @@ use ReflectionUnionType;
 
 class ClassDefinition extends Definition
 {
-    protected ?string $class = null;
-
     protected array $arguments = [];
 
     protected array $extenders = [];
@@ -22,9 +20,9 @@ class ClassDefinition extends Definition
 
     protected array $parameterNames = [];
 
-    protected ?Definition $inherit = null;
+    protected ?ClassDefinition $inherit = null;
 
-    protected ?array $collatedArguments = null;
+    protected array $collatedArguments;
 
     public function __construct(protected string $id)
     {
@@ -153,7 +151,7 @@ class ClassDefinition extends Definition
 
     protected function getCollatedArguments(Container $container) : array
     {
-        if ($this->collatedArguments === null) {
+        if (! isset($this->collatedArguments)) {
             $this->collateArguments($container);
         }
 
