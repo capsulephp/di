@@ -65,14 +65,21 @@ class ClassDefinition extends Definition
         return $this;
     }
 
-    public function &argumentValue(int|string $parameter, mixed $default = null) : mixed
+    public function getArgument(int|string $parameter) : mixed
     {
         $position = $this->parameterNames[$parameter] ?? $parameter;
+        return $this->arguments[$position];
+    }
 
-        if (! array_key_exists($position, $this->arguments)) {
-            $this->arguments[$position] = $default;
-        }
+    public function hasArgument(int|string $parameter) : bool
+    {
+        $position = $this->parameterNames[$parameter] ?? $parameter;
+        return array_key_exists($position, $this->arguments);
+    }
 
+    public function &refArgument(int|string $parameter) : mixed
+    {
+        $position = $this->parameterNames[$parameter] ?? $parameter;
         return $this->arguments[$position];
     }
 

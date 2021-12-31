@@ -43,6 +43,18 @@ class ClassDefinitionTest extends DefinitionTest
         $definition->class('NoSuchClass');
     }
 
+    public function testArgument()
+    {
+        $definition = new ClassDefinition(Fake\Foo::CLASS);
+        $this->assertFalse($definition->hasArgument(0));
+        $definition->argument(0, 'foo');
+        $this->assertTrue($definition->hasArgument(0));
+        $this->assertSame('foo', $definition->getArgument(0));
+        $value =& $definition->refArgument(0);
+        $value .= 'bar';
+        $this->assertSame('foobar', $definition->getArgument(0));
+    }
+
     public function testArgument_lazy()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);

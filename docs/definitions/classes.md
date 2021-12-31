@@ -165,6 +165,33 @@ $def->{Bar::CLASS}
     ->inherit(null);
 ```
 
+#### Argument Examination and References
+
+You can see if an argument has a value using `hasArgument()`, and retrieve the
+value of the argument using `getArgument()`.
+
+```php
+if (! $def->{Foo::CLASS}->hasArgument('bar')) {
+    $def->{Foo::CLASS}->argument('bar', 'barval');
+}
+
+assert($def->{Foo::CLASS}->get('bar') === 'barval');
+```
+
+You can also get a ***reference*** to the argument using `refArgument()`, so you
+can modify the argument in place without having to get it and re-set it.
+
+```php
+$def->{Foo::CLASS}->argument('bar', 'barval');
+
+// ...
+
+$bar =& $def->{Foo::CLASS}->refArgument('bar');
+$bar .= 'suffixed';
+
+assert($def->{Foo::CLASS}->get('bar') === 'barvalsuffixed');
+```
+
 ### Class Overrides
 
 If you like, you can specify an alternative class to use for instantiation
