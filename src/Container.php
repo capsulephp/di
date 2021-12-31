@@ -9,9 +9,9 @@ use ReflectionClass;
 
 class Container implements ContainerInterface
 {
-    protected array $registry = [];
-
     protected array $has = [];
+
+    protected array $registry = [];
 
     /**
      * @param Provider[] $providers
