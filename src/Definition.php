@@ -5,7 +5,6 @@ namespace Capsule\Di;
 
 use Capsule\Di\Lazy\Lazy;
 use Throwable;
-use Capsule\Di\Exception;
 
 abstract class Definition extends Lazy
 {

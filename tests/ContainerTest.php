@@ -30,13 +30,16 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
     public function testHas()
     {
-        // defined
+        // defined object
         $this->assertTrue($this->container->has(Fake\Foo::CLASS));
+
+        // defined value
+        $this->assertTrue($this->container->has('fooval'));
 
         // not defined but exists
         $this->assertTrue($this->container->has(Fake\Bar::CLASS));
 
-        // does not exist
+        // not defined and does not exist
         $this->assertFalse($this->container->has('NoSuchClass'));
     }
 
