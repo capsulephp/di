@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Capsule\Di;
 
+use Capsule\Di\Lazy\Get as LazyGet;
 use Capsule\Di\Lazy\Lazy;
 use ReflectionClass;
 use ReflectionMethod;
@@ -228,7 +229,7 @@ class ClassDefinition extends Definition
 
         // implicit
         if ($container->has($type)) {
-            $this->collatedArguments[$position] = $container->get($type);
+            $this->collatedArguments[$position] = new LazyGet($type);
             return true;
         }
 
