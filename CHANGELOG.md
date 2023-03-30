@@ -1,5 +1,14 @@
 # Change Log
 
+## 3.4.1
+
+- ClassDefinition::collateTypedArgument() now uses Lazy\Get() to defer
+  instantation of implicit arguments until the moment they are actually
+  used. (Previously it used $container->get() for implicit arguments, which
+  would try to instantiate the inherited argument right then; if the
+  inherited argument was not defined, this would cause an error, even if
+  the child argument was in fact defined.)
+
 ## 3.4.0
 
 - By default, child classes now inherit the constructor arguments of their
