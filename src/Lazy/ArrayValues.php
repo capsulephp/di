@@ -21,6 +21,9 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return $this->resolveValues($container, $this->values);
     }
 
+    /**
+     * @param int|string $offset
+     */
     public function offsetExists(mixed $offset) : bool
     {
         return array_key_exists($offset, $this->values);
