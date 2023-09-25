@@ -10,7 +10,7 @@ function fake(string $word) : string
 
 class FunctionCallTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $lazy = new FunctionCall('Capsule\Di\Lazy\fake', ['bar']);
         $actual = $this->actual($lazy);

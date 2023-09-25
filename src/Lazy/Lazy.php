@@ -7,6 +7,10 @@ use Capsule\Di\Container;
 
 abstract class Lazy
 {
+    /**
+     * @param mixed[] $arguments
+     * @return mixed[] $arguments
+     */
     public static function resolveArguments(
         Container $container,
         array $arguments,

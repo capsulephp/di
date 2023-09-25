@@ -28,10 +28,13 @@ class InterfaceDefinition extends Definition
     {
         if ($this->factory !== null) {
             $factory = Lazy::resolveArgument($container, $this->factory);
-            return $factory($container);
+
+            /** @var object */
+            return $this->invokeCallable($factory, $container);
         }
 
         if ($this->class !== null) {
+            /** @var object */
             return $container->new($this->class);
         }
 

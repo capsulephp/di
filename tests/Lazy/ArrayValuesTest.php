@@ -7,7 +7,7 @@ use Capsule\Di\Exception;
 
 class ArrayValuesTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $varname = 'CAPSULE_DI_FOO';
         $lazy = new ArrayValues([$varname => new Env($varname)]);
@@ -34,7 +34,7 @@ class ArrayValuesTest extends LazyTestCase
         $this->assertEquals($expect, $actual);
     }
 
-    public function testRecursion()
+    public function testRecursion() : void
     {
         $lazy = new ArrayValues([
             'foo' => new Env('CAPSULE_DI_FOO', 'int'),
@@ -50,7 +50,7 @@ class ArrayValuesTest extends LazyTestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testMerge()
+    public function testMerge() : void
     {
         $lazy = new ArrayValues(['foo', 'bar', 'baz' => 'dib']);
         $lazy->merge(['zim', 'gir', 'irk' => 'doom']);

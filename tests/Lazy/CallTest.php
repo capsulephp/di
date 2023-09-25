@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 class CallTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $lazy = new Call(function ($container) {
             return true;

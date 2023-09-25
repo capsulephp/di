@@ -7,7 +7,7 @@ use Capsule\Di\Exception;
 
 class EnvTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $varname = 'CAPSULE_DI_FOO';
         $lazy = new Env($varname);
@@ -17,7 +17,7 @@ class EnvTest extends LazyTestCase
         $this->assertEquals($expect, $actual);
     }
 
-    public function testType()
+    public function testType() : void
     {
         $varname = 'CAPSULE_DI_FOO';
         $lazy = new Env($varname, 'int');
@@ -27,7 +27,7 @@ class EnvTest extends LazyTestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testNoSuchVar()
+    public function testNoSuchVar() : void
     {
         $varname = 'CAPSULE_DI_' . random_int(1, 100);
         $lazy = new Env($varname);

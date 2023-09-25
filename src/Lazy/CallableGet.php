@@ -14,6 +14,7 @@ class CallableGet extends Lazy
     public function __invoke(Container $container) : mixed
     {
         return function () use ($container) {
+            /** @var string */
             $id = static::resolveArgument($container, $this->id);
             return $container->get($id);
         };

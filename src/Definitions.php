@@ -34,6 +34,9 @@ class Definitions extends stdClass
         return null;
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function array(array $values = []) : Lazy\ArrayValues
     {
         return new Lazy\ArrayValues($values);

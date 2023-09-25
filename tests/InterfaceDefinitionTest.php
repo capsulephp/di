@@ -7,21 +7,21 @@ use stdClass;
 
 class InterfaceDefinitionTest extends DefinitionTestCase
 {
-    public function testConstructorNotInterface()
+    public function testConstructorNotInterface() : void
     {
         $this->expectException(Exception\NotFound::CLASS);
         $this->expectExceptionMessage("Interface 'Capsule\Di\Fake\Foo' not found.");
         $definition = new InterfaceDefinition(Fake\Foo::CLASS);
     }
 
-    public function testClass()
+    public function testClass() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
         $definition->class(stdClass::CLASS);
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
-    public function testFactory()
+    public function testFactory() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
         $definition->factory(function (Container $container) {
@@ -30,7 +30,7 @@ class InterfaceDefinitionTest extends DefinitionTestCase
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
-    public function testClass_notFound()
+    public function testClass_notFound() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
         $this->expectException(Exception\NotFound::CLASS);
@@ -38,7 +38,7 @@ class InterfaceDefinitionTest extends DefinitionTestCase
         $definition->class('NoSuchClass');
     }
 
-    public function testClass_notDefined()
+    public function testClass_notDefined() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
         $this->assertNotInstantiable(

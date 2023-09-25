@@ -7,7 +7,7 @@ use Capsule\Di\Exception;
 
 class CsEnvTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $varname = 'CAPSULE_DI_FOO';
         $lazy = new CsEnv($varname, 'int');

@@ -9,7 +9,7 @@ use stdClass;
 
 class CallableGetTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $lazy = new CallableGet(stdClass::CLASS);
         $callable = $this->actual($lazy);

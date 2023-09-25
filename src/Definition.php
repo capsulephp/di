@@ -53,5 +53,14 @@ abstract class Definition extends Lazy
         }
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
+    protected function invokeCallable(mixed $callable, ...$arguments) : mixed
+    {
+        /** @var callable $callable */
+        return $callable(...$arguments);
+    }
+
     abstract protected function instantiate(Container $container) : object;
 }

@@ -13,6 +13,7 @@ class Get extends Lazy
 
     public function __invoke(Container $container) : mixed
     {
+        /** @var string */
         $id = static::resolveArgument($container, $this->id);
         return $container->get($id);
     }

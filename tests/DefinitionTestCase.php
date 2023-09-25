@@ -13,12 +13,18 @@ class DefinitionTestCase extends \PHPUnit\Framework\TestCase
         $this->container = new Container($this->definitions);
     }
 
-    protected function actual(Definition $definition)
+    protected function actual(Definition $definition) : object
     {
-        return $definition->new($this->container, $this->definitions);
+        return $definition->new($this->container);
     }
 
-    protected function assertNotInstantiable(Definition $definition, array $expect)
+    /**
+     * @param array{class-string, string}[] $expect
+     */
+    protected function assertNotInstantiable(
+        Definition $definition,
+        array $expect,
+    ) : void
     {
         try {
             $this->actual($definition);

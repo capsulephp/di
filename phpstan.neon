@@ -2,11 +2,4 @@ parameters:
     level: max
     paths:
         - src
-    ignoreErrors:
-        - "#function call_user_func expects callable#"
-        - "#method Capsule\\\\Di\\\\Container::(new|get)\\(\\) expects string, mixed given#"
-        - "#Trying to invoke mixed but it's not a callable.#"
-        - "#::instantiate\\(\\) should return object but returns mixed#"
-        - "#Cannot call method .* on ReflectionType\\|null#"
-    checkGenericClassInNonGenericObjectType: false
-    checkMissingIterableValueType: false
+        - tests

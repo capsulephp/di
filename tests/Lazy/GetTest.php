@@ -8,7 +8,7 @@ use stdClass;
 
 class GetTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $lazy = new Get(stdClass::CLASS);
         $get1 = $this->actual($lazy);
@@ -18,7 +18,7 @@ class GetTest extends LazyTestCase
         $this->assertSame($get1, $get2);
     }
 
-    public function testNoSuchClass()
+    public function testNoSuchClass() : void
     {
         $lazy = new Get('NoSuchClass');
         $this->expectException(Exception\NotFound::CLASS);

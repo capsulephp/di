@@ -7,6 +7,9 @@ use stdClass;
 
 class BadHint
 {
+    /**
+     * @phpstan-ignore-next-line Intentionally incorrect typehint.
+     */
     public function __construct(public Nonesuch $nonesuch)
     {
     }

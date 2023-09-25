@@ -16,7 +16,7 @@ class GetCallTest extends LazyTestCase
         return $def;
     }
 
-    public function test()
+    public function test() : void
     {
         $lazy = new GetCall(Fake\Foo::CLASS, 'getValue', []);
         $actual = $this->actual($lazy);

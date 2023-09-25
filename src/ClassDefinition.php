@@ -6,6 +6,7 @@ namespace Capsule\Di;
 use Capsule\Di\Lazy\Get as LazyGet;
 use Capsule\Di\Lazy\Lazy;
 use ReflectionClass;
+use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -13,22 +14,46 @@ use ReflectionUnionType;
 
 class ClassDefinition extends Definition
 {
+    /**
+     * @var mixed[]
+     */
     protected array $arguments = [];
 
+    /**
+     * @var array<int, mixed[]>
+     */
     protected array $postConstruction = [];
 
+    /**
+     * @var ReflectionParameter[]
+     */
     protected array $parameters = [];
 
+    /**
+     * @var array<string, int>
+     */
     protected array $parameterNames = [];
 
+    /**
+     * @var mixed[]
+     */
     protected array $properties = [];
 
     protected ?ClassDefinition $inherit = null;
 
+    /**
+     * @var mixed[]
+     */
     protected array $collatedArguments;
 
+    /**
+     * @var mixed[]
+     */
     protected array $collatedProperties;
 
+    /**
+     * @var ReflectionClass<object>
+     */
     protected ReflectionClass $reflection;
 
     public function __construct(protected string $id)
@@ -90,6 +115,9 @@ class ClassDefinition extends Definition
         return $this->arguments[$position];
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
     public function arguments(array $arguments) : static
     {
         $this->arguments = [];
@@ -133,6 +161,9 @@ class ClassDefinition extends Definition
         return $this;
     }
 
+    /**
+     * @param mixed[] $properties
+     */
     public function properties(array $properties) : static
     {
         $this->properties = [];
@@ -169,10 +200,13 @@ class ClassDefinition extends Definition
     {
         if ($this->factory !== null) {
             $factory = Lazy::resolveArgument($container, $this->factory);
-            return $factory($container);
+
+            /** @var object */
+            return $this->invokeCallable($factory, $container);
         }
 
         if ($this->class !== null) {
+            /** @var object */
             return $container->new($this->class);
         }
 
@@ -207,6 +241,9 @@ class ClassDefinition extends Definition
         return $object;
     }
 
+    /**
+     * @return mixed[]
+     */
     protected function getCollatedProperties(Container $container) : array
     {
         if (! isset($this->collatedProperties)) {
@@ -232,6 +269,9 @@ class ClassDefinition extends Definition
         }
     }
 
+    /**
+     * @return mixed[]
+     */
     protected function getCollatedArguments(Container $container) : array
     {
         if (! isset($this->collatedArguments)) {
@@ -298,6 +338,9 @@ class ClassDefinition extends Definition
         return false;
     }
 
+    /**
+     * @param mixed[] $inherited
+     */
     protected function collateInheritedArgument(
         int $position,
         ReflectionParameter $parameter,
@@ -334,9 +377,10 @@ class ClassDefinition extends Definition
         $name = $parameter->getName();
         $type = $parameter->getType();
 
-        if ($type instanceof ReflectionUnionType) {
+        if (! $type instanceof ReflectionNamedType) {
+            $kind = $type instanceof ReflectionUnionType ? 'Union' : 'Intersection';
             return new Exception\NotDefined(
-                "Union typed argument {$position} (\${$name}) "
+                "{$kind} typed argument {$position} (\${$name}) "
                     . "for class definition '{$this->id}' is not defined.",
             );
         }
@@ -357,6 +401,9 @@ class ClassDefinition extends Definition
         );
     }
 
+    /**
+     * @param mixed[] &$arguments
+     */
     protected function expandVariadic(array &$arguments) : void
     {
         $lastParameter = end($this->parameters);
@@ -383,13 +430,16 @@ class ClassDefinition extends Definition
             );
         }
 
-        $values = array_pop($arguments);
+        array_pop($arguments);
 
-        foreach ($values as $value) {
+        foreach ($lastArgument as $value) {
             $arguments[] = $value;
         }
     }
 
+    /**
+     * @param mixed[] $postConstruction
+     */
     protected function applyPostConstruction(
         Container $container,
         object $object,
@@ -400,19 +450,30 @@ class ClassDefinition extends Definition
 
         switch ($type) {
             case 'decorate':
-                $object = $spec($container, $object);
+                /** @var object */
+                $object = $this->invokeCallable($spec, $container, $object);
                 break;
 
             case 'method':
+                /** @var array{string, mixed[]} $spec */
                 list($method, $arguments) = $spec;
                 $object->{$method}(...$arguments);
                 break;
 
             case 'modify':
-                $spec($container, $object);
+                $this->invokeCallable($spec, $container, $object);
                 break;
         }
 
         return $object;
+    }
+
+    /**
+     * @param mixed[] $arguments
+     */
+    protected function invokeCallable(mixed $callable, ...$arguments) : mixed
+    {
+        /** @var callable $callable */
+        return $callable(...$arguments);
     }
 }

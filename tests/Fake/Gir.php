@@ -9,6 +9,9 @@ class Gir
 {
     public ?string $arg1;
 
+    /**
+     * @var mixed[]
+     */
     public array $arg2;
 
     public function __construct(

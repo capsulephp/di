@@ -8,7 +8,7 @@ use stdClass;
 
 class NewInstanceTest extends LazyTestCase
 {
-    public function test()
+    public function test() : void
     {
         $lazy = new NewInstance(stdClass::CLASS);
         $new1 = $this->actual($lazy);

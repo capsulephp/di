@@ -7,6 +7,9 @@ use Capsule\Di\Container;
 
 class StaticCall extends Lazy
 {
+    /**
+     * @param mixed[] $arguments
+     */
     public function __construct(
         protected Lazy|string $class,
         protected string $method,
@@ -18,6 +21,9 @@ class StaticCall extends Lazy
     {
         $class = static::resolveArgument($container, $this->class);
         $arguments = static::resolveArguments($container, $this->arguments);
-        return call_user_func([$class, $this->method], ...$arguments);
+
+        /** @var callable */
+        $staticCall = [$class, $this->method];
+        return $staticCall(...$arguments);
     }
 }

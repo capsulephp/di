@@ -7,14 +7,14 @@ use stdClass;
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
-    protected $container;
+    protected Container $container;
 
     protected function setUp() : void
     {
         $this->container = new Container(new Definitions(), [new Fake\FooProvider()]);
     }
 
-    public function testGet()
+    public function testGet() : void
     {
         $expect = $this->container->get(stdClass::CLASS);
         $actual = $this->container->get(stdClass::CLASS);
@@ -23,7 +23,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('lazyfooval', $this->container->get('lazyfooval'));
     }
 
-    public function testHas()
+    public function testHas() : void
     {
         // defined object
         $this->assertTrue($this->container->has(Fake\Foo::CLASS));
@@ -38,7 +38,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->container->has('NoSuchClass'));
     }
 
-    public function testNew()
+    public function testNew() : void
     {
         $expect = $this->container->new(stdClass::CLASS);
         $actual = $this->container->new(stdClass::CLASS);
@@ -47,7 +47,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('lazyfooval', $this->container->new('lazyfooval'));
     }
 
-    public function testCallableGet()
+    public function testCallableGet() : void
     {
         $callable = $this->container->callableGet(stdClass::CLASS);
         $expect = $callable(stdClass::CLASS);
@@ -55,7 +55,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testCallableNew()
+    public function testCallableNew() : void
     {
         $callable = $this->container->callableNew(stdClass::CLASS);
         $expect = $callable(stdClass::CLASS);

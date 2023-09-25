@@ -8,7 +8,7 @@ use Capsule\Di\Fake;
 
 class StaticCallTest extends LazyTestCase
 {
-    public function testStaticCall()
+    public function testStaticCall() : void
     {
         $lazy = new StaticCall(Fake\Foo::CLASS, 'staticFake', ['bar']);
         $this->assertSame('bar', $this->actual($lazy));

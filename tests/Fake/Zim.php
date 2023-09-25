@@ -7,6 +7,9 @@ use stdClass;
 
 class Zim
 {
+    /**
+     * @param mixed[]|stdClass $union
+     */
     public function __construct(public array|stdClass $union)
     {
     }

@@ -12,7 +12,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         $this->def = new Definitions();
     }
 
-    public function testNamedEntries()
+    public function testNamedEntries() : void
     {
         $this->def->foo1 = new ClassDefinition(Fake\Foo::CLASS);
         $this->assertInstanceOf(ClassDefinition::CLASS, $this->def->foo1);
@@ -21,19 +21,19 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($this->def->foo1, $this->def->foo2);
     }
 
-    public function testAliasedEntries()
+    public function testAliasedEntries() : void
     {
         $this->def->{'foo.copy'} = $this->def->{Fake\Foo::CLASS};
         $this->assertSame($this->def->{Fake\Foo::CLASS}, $this->def->{'foo.copy'});
     }
 
-    public function testClonedEntries()
+    public function testClonedEntries() : void
     {
         $this->def->{'foo.clone'} = clone $this->def->{Fake\Foo::CLASS};
         $this->assertNotSame($this->def->{Fake\Foo::CLASS}, $this->def->{'foo.clone'});
     }
 
-    public function test__magicObjects()
+    public function test__magicObjects() : void
     {
         // not defined, but exists
         $this->assertFalse(isset($this->def->{Fake\Foo::CLASS}));
@@ -57,10 +57,10 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         // does not exist
         $this->expectException(Exception\NotFound::CLASS);
         $this->expectExceptionMessage('NoSuchClass');
-        $this->def->NoSuchClass;
+        $noSuchClass = $this->def->NoSuchClass;
     }
 
-    public function test__magicValues()
+    public function test__magicValues() : void
     {
         // not defined
         $this->assertFalse(isset($this->def->foo));
@@ -71,16 +71,16 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($this->def->foo));
         $this->expectException(Exception\NotFound::CLASS);
         $this->expectExceptionMessage('foo');
-        $this->def->foo;
+        $foo = $this->def->foo;
     }
 
-    public function test__get_interface()
+    public function test__get_interface() : void
     {
         $def = $this->def->{Fake\FooInterface::CLASS};
         $this->assertInstanceOf(InterfaceDefinition::CLASS, $def);
     }
 
-    public function testCall()
+    public function testCall() : void
     {
         $this->assertInstanceOf(
             Lazy\Call::CLASS,
@@ -89,7 +89,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         }));
     }
 
-    public function testCallableGet()
+    public function testCallableGet() : void
     {
         $this->assertInstanceOf(
             Lazy\CallableGet::CLASS,
@@ -97,7 +97,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testCallableNew()
+    public function testCallableNew() : void
     {
         $this->assertInstanceOf(
             Lazy\CallableNew::CLASS,
@@ -105,7 +105,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testCsEnv()
+    public function testCsEnv() : void
     {
         $this->assertInstanceOf(Lazy\Env::CLASS, $this->def->csEnv('CAPSULE_DI_FOO'));
         $this->assertInstanceOf(
@@ -114,7 +114,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testEnv()
+    public function testEnv() : void
     {
         $this->assertInstanceOf(Lazy\Env::CLASS, $this->def->env('CAPSULE_DI_FOO'));
         $this->assertInstanceOf(
@@ -123,12 +123,12 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testArray()
+    public function testArray() : void
     {
         $this->assertInstanceOf(Lazy\ArrayValues::CLASS, $this->def->array(['foo']));
     }
 
-    public function testFunctionCall()
+    public function testFunctionCall() : void
     {
         $this->assertInstanceOf(
             Lazy\FunctionCall::CLASS,
@@ -136,12 +136,12 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGet()
+    public function testGet() : void
     {
         $this->assertInstanceOf(Lazy\Get::CLASS, $this->def->get(Fake\Foo::CLASS));
     }
 
-    public function testGetCall()
+    public function testGetCall() : void
     {
         $this->assertInstanceOf(
             Lazy\GetCall::CLASS,
@@ -149,7 +149,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testInclude()
+    public function testInclude() : void
     {
         $this->assertInstanceOf(
             Lazy\IncludeFile::CLASS,
@@ -157,7 +157,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testNew()
+    public function testNew() : void
     {
         $this->assertInstanceOf(
             Lazy\NewInstance::CLASS,
@@ -165,7 +165,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testNewCall()
+    public function testNewCall() : void
     {
         $this->assertInstanceOf(
             Lazy\NewCall::CLASS,
@@ -173,7 +173,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testRequire()
+    public function testRequire() : void
     {
         $this->assertInstanceOf(
             Lazy\RequireFile::CLASS,
@@ -181,7 +181,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testStaticCall()
+    public function testStaticCall() : void
     {
         $this->assertInstanceOf(
             Lazy\StaticCall::CLASS,
