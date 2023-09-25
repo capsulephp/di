@@ -21,9 +21,9 @@ Capsule offers the ability to:
 
 Capsule does not offer:
 
-- **Annotations.** Annotations tend to couple a service to a particular
-    container implementation; I think that kind of coupling is wise to be avoid
-    on principle.
+- **Annotations and attributes.** Annotations and attributes tend to couple a
+    service to a particular container implementation; I think that kind of
+    coupling is wise to be avoid on principle.
 
 - **Caching and compiling.** These are nominally performance enhancers, but in
     my experience they are rarely necessary, and in those rare cases the
@@ -53,6 +53,7 @@ from, including ...
 
 - [Aura](https://github.com/auraphp/Aura.Di)
 - [Auryn](https://github.com/rdlowrey/auryn)
+- [Caplet](https://github.com/pmjones/caplet)
 - [Laminas](https://docs.laminas.dev/laminas-servicemanager/) (nee Zend)
 - [Laravel](https://laravel.com/docs/8.x/container)
 - [League](https://container.thephpleague.com/)
