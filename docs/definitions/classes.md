@@ -5,7 +5,21 @@ Define the initial and/or extended construction logic for classes.
 All of the _ClassDefinition_ methods are fluent, and can be called in any
 order.
 
-## Initial Construction
+## Pre-Construction
+
+### Property Injection
+
+To set any property before construction, call the `property()` method with a
+property name and value:
+
+```php
+$def->{Foo::CLASS}
+    ->property('propertyName', 'propValue');
+```
+
+The value may be _Lazy_ resolvable.
+
+## At Construction
 
 ### Constructor Arguments
 
@@ -122,9 +136,9 @@ $def->{Baz::CLASS}
 
 #### Inherited Arguments
 
-By default, the _Definition_ for a class will "inherit" the defined arguments of
-its parent classes. Inheritance of arguments works all the way up to the
-highest parent.
+By default, the _Definition_ for a class will "inherit" the defined arguments
+and properties of its parent classes. Inheritance of arguments and properties
+works all the way up to the highest parent.
 
 For example, given these classes ...
 
@@ -264,18 +278,6 @@ the typehint.
 These "extender" methods will be applied to the object after initial
 construction (even if that construction was by `factory()`). You can specify
 them as many times as you like, and they will be applied in that order.
-
-### Property Injection
-
-To set any publicly-accessible property after construction, call the
-`property()` method with a property name and value:
-
-```php
-$def->{Foo::CLASS}
-    ->property('propertyName', 'propValue');
-```
-
-The value may be _Lazy_ resolvable.
 
 ### Setter Injection
 

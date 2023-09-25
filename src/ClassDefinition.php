@@ -21,9 +21,15 @@ class ClassDefinition extends Definition
 
     protected array $parameterNames = [];
 
+    protected array $properties = [];
+
     protected ?ClassDefinition $inherit = null;
 
     protected array $collatedArguments;
+
+    protected array $collatedProperties;
+
+    protected ReflectionClass $reflection;
 
     public function __construct(protected string $id)
     {
@@ -31,9 +37,9 @@ class ClassDefinition extends Definition
             throw new Exception\NotFound("Class '{$this->id}' not found.");
         }
 
-        $reflection = new ReflectionClass($this->id);
-        $this->isInstantiable = $reflection->isInstantiable();
-        $constructor = $reflection->getConstructor();
+        $this->reflection = new ReflectionClass($this->id);
+        $this->isInstantiable = $this->reflection->isInstantiable();
+        $constructor = $this->reflection->getConstructor();
 
         if ($constructor === null) {
             return;
@@ -127,9 +133,20 @@ class ClassDefinition extends Definition
         return $this;
     }
 
+    public function properties(array $properties) : static
+    {
+        $this->properties = [];
+
+        foreach ($properties as $name => $value) {
+            $this->property($name, $value);
+        }
+
+        return $this;
+    }
+
     public function property(string $name, mixed $value) : static
     {
-        $this->extenders[] = [__FUNCTION__, [$name, $value]];
+        $this->properties[$name] = $value;
         return $this;
     }
 
@@ -150,6 +167,19 @@ class ClassDefinition extends Definition
             return $container->new($this->class);
         }
 
+        $instance = $this->reflection->newInstanceWithoutConstructor();
+        $properties = $this->getCollatedProperties($container);
+
+        foreach ($properties as $name => $value) {
+            $prop = $this->reflection->getProperty($name);
+            $prop->setAccessible(true);
+            $prop->setValue($instance, $value);
+        }
+
+        if (! method_exists($instance, '__construct')) {
+            return $instance;
+        }
+
         $arguments = $this->getCollatedArguments($container);
 
         foreach ($this->parameters as $position => $parameter) {
@@ -164,8 +194,33 @@ class ClassDefinition extends Definition
         }
 
         $this->expandVariadic($arguments);
-        $class = $this->id;
-        return new $class(...$arguments);
+        $instance->__construct(...$arguments);
+        return $instance;
+    }
+
+    protected function getCollatedProperties(Container $container) : array
+    {
+        if (! isset($this->collatedProperties)) {
+            $this->collateProperties($container);
+        }
+
+        return $this->collatedProperties;
+    }
+
+    protected function collateProperties(Container $container) : void
+    {
+        $this->collatedProperties = [];
+        $inherited = $this->inherit === null
+            ? []
+            : $this->inherit->getCollatedProperties($container);
+
+        foreach ($inherited as $name => $value) {
+            $this->collatedProperties[$name] = $value;
+        }
+
+        foreach ($this->properties as $name => $value) {
+            $this->collatedProperties[$name] = $value;
+        }
     }
 
     protected function getCollatedArguments(Container $container) : array
@@ -355,11 +410,6 @@ class ClassDefinition extends Definition
 
             case 'modify':
                 $spec($container, $object);
-                break;
-
-            case 'property':
-                list($prop, $value) = $spec;
-                $object->{$prop} = Lazy::resolveArgument($container, $value);
                 break;
         }
 

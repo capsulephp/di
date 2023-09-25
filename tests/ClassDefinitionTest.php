@@ -235,6 +235,15 @@ class ClassDefinitionTest extends DefinitionTestCase
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
+    public function testProperty()
+    {
+        $definition = new ClassDefinition(Fake\Foo::CLASS);
+        $definition->arguments(['foo']);
+        $definition->property('prop1', 'prop1value');
+        $actual = $this->actual($definition);
+        $this->assertSame('prop1value', $actual->getProp());
+    }
+
     public function testExtenders()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
@@ -247,23 +256,24 @@ class ClassDefinitionTest extends DefinitionTestCase
             $foo->append('dib');
             return $foo;
         });
-        $definition->property('newProperty', 'newValue');
         $actual = $this->actual($definition);
         $this->assertSame('foobarbazdib', $actual->arg1);
-        $this->assertSame('newValue', $actual->newProperty);
     }
 
     public function testInherit()
     {
         $def = $this->definitions;
         $def->{Fake\Foo::CLASS}->argument('arg1', 'parent');
+        $def->{Fake\Foo::CLASS}->property('prop1', 'prop1value');
         $def->{Fake\FooFoo::CLASS}->inherit($def)->argument('arg2', 'child');
         $actual = $this->container->new(Fake\FooFoo::CLASS);
         $this->assertSame('parent', $actual->arg1);
         $this->assertSame('child', $actual->arg2);
+        $this->assertSame('prop1value', $actual->getProp());
         $actual = $this->container->new(Fake\FooFooFoo::CLASS);
         $this->assertSame('parent', $actual->arg1);
         $this->assertSame('child', $actual->arg2);
+        $this->assertSame('prop1value', $actual->getProp());
     }
 
     public function testInherit_disabled()
