@@ -1,4 +1,4 @@
-# Capsule 3.x
+# Capsule 4.x
 
 Capsule is a [PSR-11 (2.0)](https://www.php-fig.org/psr/psr-11/) compliant
 autowiring dependency injection container with object-oriented configuration of
