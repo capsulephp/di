@@ -10,7 +10,7 @@ class StaticCall extends Lazy
     public function __construct(
         protected Lazy|string $class,
         protected string $method,
-        protected array $arguments
+        protected array $arguments,
     ) {
     }
 

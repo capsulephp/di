@@ -14,11 +14,11 @@ class Definitions extends stdClass
         $definition = $this->newDefinition($id);
 
         if ($definition === null) {
-            throw new Exception\NotFound("Value definition '$id' not found.");
+            throw new Exception\NotFound("Value definition '{$id}' not found.");
         }
 
-        $this->$id = $definition;
-        return $this->$id;
+        $this->{$id} = $definition;
+        return $this->{$id};
     }
 
     public function newDefinition(string $type) : ?Definition
@@ -66,7 +66,7 @@ class Definitions extends stdClass
 
     public function functionCall(
         string $function,
-        mixed ...$arguments
+        mixed ...$arguments,
     ) : Lazy\FunctionCall
     {
         return new Lazy\FunctionCall($function, $arguments);
@@ -80,7 +80,7 @@ class Definitions extends stdClass
     public function getCall(
         string|AnyLazy $class,
         string $method,
-        mixed ...$arguments
+        mixed ...$arguments,
     ) : Lazy\GetCall
     {
         return new Lazy\GetCall($class, $method, $arguments);
@@ -94,22 +94,18 @@ class Definitions extends stdClass
     public function newCall(
         string|AnyLazy $class,
         string $method,
-        mixed ...$arguments
+        mixed ...$arguments,
     ) : Lazy\NewCall
     {
         return new Lazy\NewCall($class, $method, $arguments);
     }
 
-    public function include(
-        string|AnyLazy $file
-    ) : Lazy\IncludeFile
+    public function include(string|AnyLazy $file) : Lazy\IncludeFile
     {
         return new Lazy\IncludeFile($file);
     }
 
-    public function require(
-        string|AnyLazy $file
-    ) : Lazy\RequireFile
+    public function require(string|AnyLazy $file) : Lazy\RequireFile
     {
         return new Lazy\RequireFile($file);
     }
@@ -117,7 +113,7 @@ class Definitions extends stdClass
     public function staticCall(
         string|AnyLazy $class,
         string $method,
-        mixed ...$arguments
+        mixed ...$arguments,
     ) : Lazy\StaticCall
     {
         return new Lazy\StaticCall($class, $method, $arguments);

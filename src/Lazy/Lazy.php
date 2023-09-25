@@ -7,9 +7,9 @@ use Capsule\Di\Container;
 
 abstract class Lazy
 {
-    static public function resolveArguments(
+    public static function resolveArguments(
         Container $container,
-        array $arguments
+        array $arguments,
     ) : array
     {
         foreach ($arguments as &$argument) {
@@ -19,9 +19,9 @@ abstract class Lazy
         return $arguments;
     }
 
-    static public function resolveArgument(
+    public static function resolveArgument(
         Container $container,
-        mixed $argument
+        mixed $argument,
     ) : mixed
     {
         if ($argument instanceof Lazy) {

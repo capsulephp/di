@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Container;
-
 use ArrayAccess;
 use ArrayIterator;
 use IteratorAggregate;

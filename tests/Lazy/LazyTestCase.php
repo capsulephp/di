@@ -7,7 +7,7 @@ use Capsule\Di\Container;
 use Capsule\Di\Definitions;
 use Capsule\Di\Lazy\Lazy;
 
-abstract class LazyTest extends \PHPUnit\Framework\TestCase
+class LazyTestCase extends \PHPUnit\Framework\TestCase
 {
     protected Container $container;
 

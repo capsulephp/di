@@ -11,12 +11,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp() : void
     {
-        $this->container = new Container(
-            new Definitions(),
-            [
-                new Fake\FooProvider(),
-            ]
-        );
+        $this->container = new Container(new Definitions(), [new Fake\FooProvider()]);
     }
 
     public function testGet()

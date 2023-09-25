@@ -7,10 +7,8 @@ use Capsule\Di\Container;
 
 class FunctionCall extends Lazy
 {
-    public function __construct(
-        protected string $function,
-        protected array $arguments
-    ) {
+    public function __construct(protected string $function, protected array $arguments)
+    {
     }
 
     public function __invoke(Container $container) : mixed

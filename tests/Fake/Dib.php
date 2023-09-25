@@ -5,9 +5,7 @@ namespace Capsule\Di\Fake;
 
 class Dib
 {
-    public function __construct(
-        public ?Foo $arg0,
-        public ?Foo $arg1 = null
-    ) {
+    public function __construct(public ?Foo $arg0, public ?Foo $arg1 = null)
+    {
     }
 }

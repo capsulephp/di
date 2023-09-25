@@ -10,9 +10,10 @@ abstract class Definition extends Lazy
 {
     protected string $id;
 
-    protected ?string $class = null;
+    protected ?string $class = null;protected mixed
 
-    protected mixed /* callable */ $factory = null;
+    /* callable */
+    $factory = null;
 
     protected bool $isInstantiable = false;
 
@@ -47,7 +48,7 @@ abstract class Definition extends Lazy
         } catch (Throwable $e) {
             throw new Exception\NotInstantiated(
                 "Could not instantiate {$this->id}",
-                previous: $e
+                previous: $e,
             );
         }
     }

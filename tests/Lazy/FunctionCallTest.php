@@ -8,7 +8,7 @@ function fake(string $word) : string
     return $word;
 }
 
-class FunctionCallTest extends LazyTest
+class FunctionCallTest extends LazyTestCase
 {
     public function test()
     {

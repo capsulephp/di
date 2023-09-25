@@ -5,7 +5,7 @@ namespace Capsule\Di;
 
 use stdClass;
 
-class InterfaceDefinitionTest extends DefinitionTest
+class InterfaceDefinitionTest extends DefinitionTestCase
 {
     public function testConstructorNotInterface()
     {
@@ -41,11 +41,14 @@ class InterfaceDefinitionTest extends DefinitionTest
     public function testClass_notDefined()
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotDefined::CLASS,
-                "Class/factory for interface definition 'Capsule\Di\Fake\FooInterface' not set.",
-            ]
-        ]);
+                [
+                    Exception\NotDefined::CLASS,
+                    "Class/factory for interface definition 'Capsule\Di\Fake\FooInterface' not set.",
+                ],
+            ],
+        );
     }
 }

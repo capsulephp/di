@@ -10,7 +10,7 @@ class NewCall extends Lazy
     public function __construct(
         protected string|Lazy $id,
         protected string $method,
-        protected array $arguments
+        protected array $arguments,
     ) {
     }
 

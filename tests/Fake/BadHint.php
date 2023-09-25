@@ -7,8 +7,7 @@ use stdClass;
 
 class BadHint
 {
-    public function __construct(
-        public Nonesuch $nonesuch,
-    ) {
+    public function __construct(public Nonesuch $nonesuch)
+    {
     }
 }

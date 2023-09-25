@@ -55,7 +55,7 @@ class ClassDefinition extends Definition
             return $this;
         }
 
-        $this->inherit = $def->$parent;
+        $this->inherit = $def->{$parent};
         return $this;
     }
 
@@ -159,7 +159,7 @@ class ClassDefinition extends Definition
 
             $arguments[$position] = Lazy::resolveArgument(
                 $container,
-                $arguments[$position]
+                $arguments[$position],
             );
         }
 
@@ -180,8 +180,7 @@ class ClassDefinition extends Definition
     protected function collateArguments(Container $container) : void
     {
         $this->collatedArguments = [];
-
-        $inherited = ($this->inherit === null)
+        $inherited = $this->inherit === null
             ? []
             : $this->inherit->getCollatedArguments($container);
 
@@ -195,7 +194,7 @@ class ClassDefinition extends Definition
 
     protected function collatePositionalArgument(
         int $position,
-        ReflectionParameter $parameter
+        ReflectionParameter $parameter,
     ) : bool
     {
         if (! array_key_exists($position, $this->arguments)) {
@@ -203,14 +202,13 @@ class ClassDefinition extends Definition
         }
 
         $this->collatedArguments[$position] = $this->arguments[$position];
-
         return true;
     }
 
     protected function collateTypedArgument(
         int $position,
         ReflectionParameter $parameter,
-        Container $container
+        Container $container,
     ) : bool
     {
         $type = $parameter->getType();
@@ -239,7 +237,7 @@ class ClassDefinition extends Definition
     protected function collateInheritedArgument(
         int $position,
         ReflectionParameter $parameter,
-        array $inherited
+        array $inherited,
     ) : bool
     {
         if (array_key_exists($position, $inherited)) {
@@ -252,24 +250,21 @@ class ClassDefinition extends Definition
 
     protected function collateOptionalArgument(
         int $position,
-        ReflectionParameter $parameter
+        ReflectionParameter $parameter,
     ) : bool
     {
         if (! $parameter->isOptional()) {
             return false;
         }
 
-        $value = $parameter->isVariadic()
-            ? []
-            : $parameter->getDefaultValue();
-
+        $value = $parameter->isVariadic() ? [] : $parameter->getDefaultValue();
         $this->collatedArguments[$position] = $value;
         return true;
     }
 
     protected function argumentNotDefined(
         int $position,
-        ReflectionParameter $parameter
+        ReflectionParameter $parameter,
     ) : Exception\NotDefined
     {
         $name = $parameter->getName();
@@ -278,27 +273,23 @@ class ClassDefinition extends Definition
         if ($type instanceof ReflectionUnionType) {
             return new Exception\NotDefined(
                 "Union typed argument {$position} (\${$name}) "
-                . "for class definition '{$this->id}' is not defined."
+                    . "for class definition '{$this->id}' is not defined.",
             );
         }
 
         $hint = $type->getName();
 
-        if (
-            $type->isBuiltin()
-            || class_exists($hint)
-            || interface_exists($hint))
-        {
+        if ($type->isBuiltin() || class_exists($hint) || interface_exists($hint)) {
             return new Exception\NotDefined(
                 "Required argument {$position} (\${$name}) "
-                . "for class definition '{$this->id}' is not defined."
+                    . "for class definition '{$this->id}' is not defined.",
             );
         }
 
         return new Exception\NotDefined(
-                "Required argument {$position} (\${$name}) "
+            "Required argument {$position} (\${$name}) "
                 . "for class definition '{$this->id}' is typehinted as "
-                . "{$hint}, which does not exist."
+                . "{$hint}, which does not exist.",
         );
     }
 
@@ -323,8 +314,8 @@ class ClassDefinition extends Definition
 
             throw new Exception\NotAllowed(
                 "Variadic argument {$position} (\${$name}) "
-                . "for class definition '{$this->id}' is defined as {$type}, "
-                . "but should be an array of variadic values."
+                    . "for class definition '{$this->id}' is defined as {$type}, "
+                    . "but should be an array of variadic values.",
             );
         }
 
@@ -347,10 +338,10 @@ class ClassDefinition extends Definition
     protected function applyExtender(
         Container $container,
         object $object,
-        array $extender
+        array $extender,
     ) : object
     {
-        list ($type, $spec) = $extender;
+        list($type, $spec) = $extender;
 
         switch ($type) {
             case 'decorate':
@@ -358,8 +349,8 @@ class ClassDefinition extends Definition
                 break;
 
             case 'method':
-                list ($method, $arguments) = $spec;
-                $object->$method(...$arguments);
+                list($method, $arguments) = $spec;
+                $object->{$method}(...$arguments);
                 break;
 
             case 'modify':
@@ -368,7 +359,7 @@ class ClassDefinition extends Definition
 
             case 'property':
                 list($prop, $value) = $spec;
-                $object->$prop = Lazy::resolveArgument($container, $value);
+                $object->{$prop} = Lazy::resolveArgument($container, $value);
                 break;
         }
 

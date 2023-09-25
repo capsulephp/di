@@ -10,7 +10,7 @@ class Env extends Lazy
 {
     public function __construct(
         protected string $varname,
-        protected ?string $vartype = null
+        protected ?string $vartype = null,
     ) {
     }
 
@@ -31,7 +31,7 @@ class Env extends Lazy
 
         if (! array_key_exists($this->varname, $env)) {
             throw new Exception\NotDefined(
-                "Evironment variable '{$this->varname}' is not defined."
+                "Evironment variable '{$this->varname}' is not defined.",
             );
         }
 

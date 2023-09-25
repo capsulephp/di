@@ -5,7 +5,7 @@ namespace Capsule\Di;
 
 use stdClass;
 
-class ClassDefinitionTest extends DefinitionTest
+class ClassDefinitionTest extends DefinitionTestCase
 {
     public function testNoConstructor()
     {
@@ -82,24 +82,20 @@ class ClassDefinitionTest extends DefinitionTest
     public function testArgument_typed()
     {
         $definition = new ClassDefinition(Fake\Baz::CLASS);
-        $definition->argument(stdClass::CLASS, $this->definitions->new(stdClass::CLASS));
+        $definition->argument(
+            stdClass::CLASS,
+            $this->definitions->new(stdClass::CLASS),
+        );
         $this->assertInstanceOf(Fake\Baz::CLASS, $this->actual($definition));
     }
 
     public function testArguments_latestTakesPrecedence()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
-        $definition->arguments([
-            0 => 'valbefore',
-            'arg1' => 'valafter',
-        ]);
+        $definition->arguments([0 => 'valbefore', 'arg1' => 'valafter']);
         $actual = $this->actual($definition);
         $this->assertSame('valafter', $actual->arg1);
-
-        $definition->arguments([
-            'arg1' => 'valbefore',
-            0 => 'valafter',
-        ]);
+        $definition->arguments(['arg1' => 'valbefore', 0 => 'valafter']);
         $actual = $this->actual($definition);
         $this->assertSame('valafter', $actual->arg1);
     }
@@ -107,49 +103,61 @@ class ClassDefinitionTest extends DefinitionTest
     public function testArgument_missingRequired()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotDefined::CLASS,
-                "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\Foo' is not defined."
+                [
+                    Exception\NotDefined::CLASS,
+                    "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\Foo' is not defined.",
+                ],
             ],
-        ]);
+        );
     }
 
     public function testArgument_missingRequiredNullable()
     {
         $definition = new ClassDefinition(Fake\Bar::CLASS);
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotInstantiated::CLASS,
-                "Could not instantiate Capsule\Di\Fake\Foo"
+                [
+                    Exception\NotInstantiated::CLASS,
+                    "Could not instantiate Capsule\Di\Fake\Foo",
+                ],
+                [
+                    Exception\NotDefined::CLASS,
+                    "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\Foo' is not defined.",
+                ],
             ],
-            [
-                Exception\NotDefined::CLASS,
-                "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\Foo' is not defined."
-            ]
-        ]);
+        );
     }
 
     public function testArgument_missingUnionType()
     {
         $definition = new ClassDefinition(Fake\Zim::CLASS);
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotDefined::CLASS,
-                "Union typed argument 0 (\$union) for class definition 'Capsule\Di\Fake\Zim' is not defined."
-            ]
-        ]);
+                [
+                    Exception\NotDefined::CLASS,
+                    "Union typed argument 0 (\$union) for class definition 'Capsule\Di\Fake\Zim' is not defined.",
+                ],
+            ],
+        );
     }
 
     public function testArgument_typeDoesNotExist()
     {
         $definition = new ClassDefinition(Fake\BadHint::CLASS);
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotDefined::CLASS,
-                "Required argument 0 (\$nonesuch) for class definition 'Capsule\Di\Fake\BadHint' is typehinted as Capsule\Di\Fake\Nonesuch, which does not exist."
-            ]
-        ]);
+                [
+                    Exception\NotDefined::CLASS,
+                    "Required argument 0 (\$nonesuch) for class definition 'Capsule\Di\Fake\BadHint' is typehinted as Capsule\Di\Fake\Nonesuch, which does not exist.",
+                ],
+            ],
+        );
     }
 
     public function testArgument_unionType()
@@ -164,10 +172,8 @@ class ClassDefinitionTest extends DefinitionTest
     public function testArgument_namedType()
     {
         $definition = new ClassDefinition(Fake\Baz::CLASS);
-
         $baz1 = $this->actual($definition);
         $this->assertInstanceOf(Fake\Baz::CLASS, $baz1);
-
         $baz2 = $this->actual($definition);
         $this->assertSame($baz1->std, $baz2->std);
     }
@@ -191,11 +197,7 @@ class ClassDefinitionTest extends DefinitionTest
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
         $expect = ['val2a', 'val2b', 'val2c'];
-        $definition->arguments([
-            'va10',
-            'val1',
-            $expect,
-        ]);
+        $definition->arguments(['va10', 'val1', $expect]);
         $actual = $this->actual($definition);
         $this->assertSame($expect, $actual->arg2);
     }
@@ -203,10 +205,7 @@ class ClassDefinitionTest extends DefinitionTest
     public function testArgument_variadicOmitted()
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
-        $definition->arguments([
-            'va10',
-            'val1',
-        ]);
+        $definition->arguments(['va10', 'val1']);
         $actual = $this->actual($definition);
         $this->assertSame([], $actual->arg2);
     }
@@ -214,17 +213,16 @@ class ClassDefinitionTest extends DefinitionTest
     public function testArgument_variadicWrong()
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
-        $definition->arguments([
-            'va10',
-            'val1',
-            'not-an-array',
-        ]);
-        $this->assertNotInstantiable($definition, [
+        $definition->arguments(['va10', 'val1', 'not-an-array']);
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotAllowed::CLASS,
-                "Variadic argument 2 (\$arg2) for class definition 'Capsule\Di\Fake\Gir' is defined as string, but should be an array of variadic values."
-            ]
-        ]);
+                [
+                    Exception\NotAllowed::CLASS,
+                    "Variadic argument 2 (\$arg2) for class definition 'Capsule\Di\Fake\Gir' is defined as string, but should be an array of variadic values.",
+                ],
+            ],
+        );
     }
 
     public function testFactory()
@@ -250,7 +248,6 @@ class ClassDefinitionTest extends DefinitionTest
             return $foo;
         });
         $definition->property('newProperty', 'newValue');
-
         $actual = $this->actual($definition);
         $this->assertSame('foobarbazdib', $actual->arg1);
         $this->assertSame('newValue', $actual->newProperty);
@@ -259,18 +256,11 @@ class ClassDefinitionTest extends DefinitionTest
     public function testInherit()
     {
         $def = $this->definitions;
-
-        $def->{Fake\Foo::CLASS}
-            ->argument('arg1', 'parent');
-
-        $def->{Fake\FooFoo::CLASS}
-            ->inherit($def)
-            ->argument('arg2', 'child');
-
+        $def->{Fake\Foo::CLASS}->argument('arg1', 'parent');
+        $def->{Fake\FooFoo::CLASS}->inherit($def)->argument('arg2', 'child');
         $actual = $this->container->new(Fake\FooFoo::CLASS);
         $this->assertSame('parent', $actual->arg1);
         $this->assertSame('child', $actual->arg2);
-
         $actual = $this->container->new(Fake\FooFooFoo::CLASS);
         $this->assertSame('parent', $actual->arg1);
         $this->assertSame('child', $actual->arg2);
@@ -278,20 +268,20 @@ class ClassDefinitionTest extends DefinitionTest
 
     public function testInherit_disabled()
     {
-        $this->definitions->{Fake\Foo::CLASS}
-            ->argument('arg1', 'parent');
-
-        $this->definitions->{Fake\FooFoo::CLASS}
+        $this->definitions->{Fake\Foo::CLASS}->argument('arg1', 'parent');
+        $this->definitions
+            ->{Fake\FooFoo::CLASS}
             ->inherit(null)
             ->argument('arg2', 'child');
-
         $definition = $this->definitions->{Fake\FooFoo::CLASS};
-
-        $this->assertNotInstantiable($definition, [
+        $this->assertNotInstantiable(
+            $definition,
             [
-                Exception\NotDefined::CLASS,
-                "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\FooFoo' is not defined.",
+                [
+                    Exception\NotDefined::CLASS,
+                    "Required argument 0 (\$arg1) for class definition 'Capsule\Di\Fake\FooFoo' is not defined.",
+                ],
             ],
-        ]);
+        );
     }
 }

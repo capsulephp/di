@@ -1,7 +1,7 @@
 <?php
 namespace Capsule\Di;
 
-abstract class DefinitionTest extends \PHPUnit\Framework\TestCase
+class DefinitionTestCase extends \PHPUnit\Framework\TestCase
 {
     protected Container $container;
 
@@ -18,10 +18,8 @@ abstract class DefinitionTest extends \PHPUnit\Framework\TestCase
         return $definition->new($this->container, $this->definitions);
     }
 
-    protected function assertNotInstantiable(
-        Definition $definition,
-        array $expect
-    ) {
+    protected function assertNotInstantiable(Definition $definition, array $expect)
+    {
         try {
             $this->actual($definition);
             $this->assertFalse(true, "Should not have been instantiated.");

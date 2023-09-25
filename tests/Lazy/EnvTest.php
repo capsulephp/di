@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Exception;
 
-class EnvTest extends LazyTest
+class EnvTest extends LazyTestCase
 {
     public function test()
     {
@@ -33,7 +33,7 @@ class EnvTest extends LazyTest
         $lazy = new Env($varname);
         $this->expectException(Exception\NotDefined::CLASS);
         $this->expectExceptionMessage(
-            "Evironment variable '{$varname}' is not defined."
+            "Evironment variable '{$varname}' is not defined.",
         );
         $this->actual($lazy);
     }

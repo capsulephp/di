@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Capsule\Di\Lazy;
 
-class IncludeFileTest extends LazyTest
+class IncludeFileTest extends LazyTestCase
 {
     public function testString()
     {
         $lazy = new IncludeFile(
-            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php'
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php',
         );
         $expect = 'included';
         $this->assertSame($expect, $this->actual($lazy));

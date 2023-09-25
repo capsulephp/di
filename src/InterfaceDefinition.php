@@ -36,7 +36,7 @@ class InterfaceDefinition extends Definition
         }
 
         throw new Exception\NotDefined(
-            "Class/factory for interface definition '{$this->id}' not set."
+            "Class/factory for interface definition '{$this->id}' not set.",
         );
     }
 }

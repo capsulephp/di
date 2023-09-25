@@ -10,7 +10,7 @@ class Irk
     public function __construct(
         public stdClass $arg0,
         public string $arg1,
-        public string $arg2 = 'arg2-default'
+        public string $arg2 = 'arg2-default',
     ) {
     }
 }

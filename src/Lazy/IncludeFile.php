@@ -7,9 +7,8 @@ use Capsule\Di\Container;
 
 class IncludeFile extends Lazy
 {
-    public function __construct(
-        protected string|Lazy $file
-    ) {
+    public function __construct(protected string|Lazy $file)
+    {
     }
 
     public function __invoke(Container $container) : mixed

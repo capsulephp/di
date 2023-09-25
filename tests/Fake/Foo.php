@@ -5,10 +5,8 @@ namespace Capsule\Di\Fake;
 
 class Foo implements FooInterface
 {
-    public function __construct(
-        public string $arg1,
-        public string $arg2 = 'val2'
-    ) {
+    public function __construct(public string $arg1, public string $arg2 = 'val2')
+    {
     }
 
     public function append(string $suffix) : void

@@ -9,7 +9,7 @@ class CsEnv extends Env
 {
     public function __construct(
         protected string $varname,
-        protected ?string $vartype = null
+        protected ?string $vartype = null,
     ) {
     }
 

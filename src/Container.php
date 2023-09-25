@@ -18,7 +18,7 @@ class Container implements ContainerInterface
      */
     public function __construct(
         protected Definitions $definitions,
-        iterable $providers = []
+        iterable $providers = [],
     ) {
         foreach ($providers as $provider) {
             $provider->provide($this->definitions);
@@ -47,12 +47,12 @@ class Container implements ContainerInterface
 
     protected function find(string $id) : bool
     {
-        if (! isset($this->definitions->$id)) {
+        if (! isset($this->definitions->{$id})) {
             return $this->findImplicit($id);
         }
 
-        if ($this->definitions->$id instanceof Definition) {
-            return $this->definitions->$id->isInstantiable($this);
+        if ($this->definitions->{$id} instanceof Definition) {
+            return $this->definitions->{$id}->isInstantiable($this);
         }
 
         return true;
@@ -70,7 +70,7 @@ class Container implements ContainerInterface
 
     public function new(string $id) : mixed
     {
-        return Lazy::resolveArgument($this, $this->definitions->$id);
+        return Lazy::resolveArgument($this, $this->definitions->{$id});
     }
 
     public function callableGet(string $id) : callable

@@ -6,17 +6,15 @@ namespace Capsule\Di\Lazy;
 use Capsule\Di\Exception;
 use stdClass;
 
-class GetTest extends LazyTest
+class GetTest extends LazyTestCase
 {
     public function test()
     {
         $lazy = new Get(stdClass::CLASS);
         $get1 = $this->actual($lazy);
         $this->assertInstanceOf(stdClass::CLASS, $get1);
-
         $get2 = $this->actual($lazy);
         $this->assertInstanceOf(stdClass::CLASS, $get2);
-
         $this->assertSame($get1, $get2);
     }
 

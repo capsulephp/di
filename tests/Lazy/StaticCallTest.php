@@ -6,7 +6,7 @@ namespace Capsule\Di\Lazy;
 use Capsule\Di\Definitions;
 use Capsule\Di\Fake;
 
-class StaticCallTest extends LazyTest
+class StaticCallTest extends LazyTestCase
 {
     public function testStaticCall()
     {

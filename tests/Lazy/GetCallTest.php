@@ -7,7 +7,7 @@ use Capsule\Di\Definitions;
 use Capsule\Di\Fake;
 use stdClass;
 
-class GetCallTest extends LazyTest
+class GetCallTest extends LazyTestCase
 {
     protected function definitions() : Definitions
     {

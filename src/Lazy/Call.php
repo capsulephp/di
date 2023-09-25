@@ -7,7 +7,10 @@ use Capsule\Di\Container;
 
 class Call extends Lazy
 {
-    public function __construct(protected mixed /* callable */ $callable)
+    /**
+     * @param callable $callable
+     */
+    public function __construct(protected mixed $callable)
     {
     }
 

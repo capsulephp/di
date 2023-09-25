@@ -7,8 +7,7 @@ use stdClass;
 
 class Zim
 {
-    public function __construct(
-        public array|stdClass $union
-    ) {
+    public function __construct(public array|stdClass $union)
+    {
     }
 }

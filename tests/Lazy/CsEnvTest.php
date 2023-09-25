@@ -5,7 +5,7 @@ namespace Capsule\Di\Lazy;
 
 use Capsule\Di\Exception;
 
-class CsEnvTest extends LazyTest
+class CsEnvTest extends LazyTestCase
 {
     public function test()
     {
