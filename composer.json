@@ -45,6 +45,7 @@
         "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
         "check": "composer cs-fix && composer test && composer analyze",
         "cs-fix": "./vendor/bin/php-styler apply",
-        "test": "./vendor/bin/phpunit"
+        "test": "./vendor/bin/phpunit",
+        "test-coverage": "./vendor/bin/phpunit --coverage-html=./tmp/unit"
     }
 }
