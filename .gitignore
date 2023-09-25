@@ -1,4 +1,5 @@
 /composer.lock
 /tmp/
 /vendor/
-/.phpunit.result.cache
+/.phpunit.cache
+/.php-styler.cache
