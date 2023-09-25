@@ -168,8 +168,6 @@ $def->{Foo::CLASS}
         'bar',
         $def->new(Bar::CLASS) // $container->new(Bar::CLASS)
     );
-
-// --> $container->new(Bar::CLASS)
 ```
 
 ## New Instance Method Calls
