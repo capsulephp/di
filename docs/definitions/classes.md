@@ -1,25 +1,15 @@
 # Class Definitions
 
-Define the initial and/or extended construction logic for classes.
+Define the construction logic, including pre- and post-construction logic, for
+classes. There is also the ability to inherit (or not inherit) elements of
+the parent class definition.
 
 All of the _ClassDefinition_ methods are fluent, and can be called in any
 order.
 
-## Pre-Construction
+## Construction
 
-### Property Injection
-
-To set any property before construction, call the `property()` method with a
-property name and value:
-
-```php
-$def->{Foo::CLASS}
-    ->property('propertyName', 'propValue');
-```
-
-The value may be _Lazy_ resolvable.
-
-## At Construction
+These will be applied when the `__construct()` method is called.
 
 ### Constructor Arguments
 
@@ -134,51 +124,6 @@ $def->{Baz::CLASS}
     ->argument('items', ['a', 'b', 'c']);
 ```
 
-#### Inherited Arguments
-
-By default, the _Definition_ for a class will "inherit" the defined arguments
-and properties of its parent classes. Inheritance of arguments and properties
-works all the way up to the highest parent.
-
-For example, given these classes ...
-
-```php
-class Foo
-{
-    public function __construct(string $arg0)
-    {
-    }
-}
-
-class Bar extends Foo
-{
-}
-```
-
-... and this _Definition_ ...
-
-```php
-$def->{Foo::CLASS}
-    ->argument(0, 'value1')
-```
-
-... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in
-this case, it will be `'value1'`).
-
-You can override any or all inherited values by using `argument()` or
-`arguments()` on the _Definition_ for the child class.
-
-If you want to disable or interrupt inheritance, call `inherit(null)` on the
-child _Definition_:
-
-```php
-$def->{Foo::CLASS}
-    ->argument(0, 'value1')
-
-$def->{Bar::CLASS}
-    ->inherit(null);
-```
-
 #### Argument Examination and References
 
 You can see if an argument value has been defined using `hasArgument()`, and
@@ -206,6 +151,10 @@ $bar .= 'suffixed';
 assert($def->{Foo::CLASS}->get('bar') === 'barvalsuffixed');
 ```
 
+## Pre-Construction
+
+These will be applied to the object instance before the `__construct()` method is called.
+
 ### Class Overrides
 
 If you like, you can specify an alternative class to use for instantiation
@@ -222,17 +171,19 @@ work for the typehint.
 
 Setting an alternative `class()` will cause the _Container_ to use the
 definition for that other class. In the above example, that means any
-_AbstractFoo_ extended construction logic will be ignored in favor of the _Foo_
-object definition, although the _Foo_ definition will still inherit any
-defined _AbstractFoo_ arguments.
+_AbstractFoo_ pre- and post-construction logic will be ignored in favor of
+the _Foo_ object definition, although the _Foo_ definition will still
+inherit any defined _AbstractFoo_ properties and arguments.
 
 ### Factory Instantiation
 
-Instead of relying on automatic instantiation via `arguments()` and `class()`,
-you can set callable factory on the class definition. This lets you create
-the object yourself, instead of letting the _Container_ instantiate it for you.
+Instead of relying on automatic instantiation via `class()`, `properties
+()`, and `arguments()`, you can set a callable factory on the class
+definition. This lets you create the object yourself, instead of letting
+the _Container_ instantiate it for you.
 
-**The `factory()` takes precedence over the `arguments()` and `class()` settings.**
+**The `factory()` takes precedence over the `class()`, `properties()`, and
+  `arguments()` settings.**
 
 The callable factory must have the following signature ...
 
@@ -273,9 +224,35 @@ $def->{Foo::CLASS}
 ... in which case you must be careful that the replacement class will work for
 the typehint.
 
-## Extended Construction
+### Property Injection
 
-These "extender" methods will be applied to the object after initial
+To set any property before construction, call the `property()` method with a
+property name and value:
+
+```php
+$def->{Foo::CLASS}
+    ->property('prop1', 'prop1value')
+    ->property('prop2', 'prop2value')
+    ->property('prop3', 'prop3value');
+```
+
+The property value may be _Lazy_ resolvable.
+
+Alternatively, you can set multiple properties all at once using `properties()`,
+overriding all previous properties:
+
+```php
+$def->{Foo::CLASS}
+    ->properties([
+        'prop1' => 'prop1value',
+        'prop2' => 'prop2value',
+        'prop3' => 'prop3value',
+    ]);
+```
+
+## Post-Construction
+
+These post-construction methods will be applied to the object after initial
 construction (even if that construction was by `factory()`). You can specify
 them as many times as you like, and they will be applied in that order.
 
@@ -337,9 +314,9 @@ $def->{ComplexSetup::CLASS}
 
 ### Decorators
 
-Whereas `method()`, `modify()`, and `property()` work on the object in place,
-the `decorate()` method allows you to return a completely different object if
-you like. To use it, pass a callable with following signature ...
+Whereas `method()` and `modify()` work on the object in place, the `decorate()`
+method allows you to return a completely different object if you like. To use
+it, pass a callable with following signature ...
 
 ```php
 function (Container $container, object $object) : object
@@ -356,3 +333,52 @@ $def->{Foo::CLASS}
         return new DecoratedFoo($foo);
     });
 ```
+
+## Inheritance
+
+By default, the _Definition_ for a class will "inherit" the defined arguments
+and properties of its parent classes. Inheritance of arguments and properties
+works all the way up to the highest parent.
+
+For example, given these classes ...
+
+```php
+class Foo
+{
+    public function __construct(string $arg0)
+    {
+    }
+}
+
+class Bar extends Foo
+{
+}
+```
+
+... and this _Definition_ ...
+
+```php
+$def->{Foo::CLASS}
+    ->argument(0, 'value1')
+```
+
+... then the value of _Bar_ `$arg0` will be inherited from _Foo_ `$arg0` (in
+this case, it will be `'value1'`).
+
+You can override any or all inherited arguments by using `argument()` or
+`arguments()` on the _Definition_ for the child class.
+
+Likewise, you can override any or all inherited properties by using
+`property()` or `properties()` on the _Definition_ for the child class.
+
+If you want to disable or interrupt inheritance, call `inherit(null)` on the
+child _Definition_:
+
+```php
+$def->{Foo::CLASS}
+    ->argument(0, 'value1')
+
+$def->{Bar::CLASS}
+    ->inherit(null);
+```
+
