@@ -15,7 +15,7 @@ class ClassDefinition extends Definition
 {
     protected array $arguments = [];
 
-    protected array $extenders = [];
+    protected array $postConstruction = [];
 
     protected array $parameters = [];
 
@@ -117,19 +117,19 @@ class ClassDefinition extends Definition
 
     public function method(string $method, mixed ...$arguments) : static
     {
-        $this->extenders[] = [__FUNCTION__, [$method, $arguments]];
+        $this->postConstruction[] = [__FUNCTION__, [$method, $arguments]];
         return $this;
     }
 
     public function modify(callable $callable) : static
     {
-        $this->extenders[] = [__FUNCTION__, $callable];
+        $this->postConstruction[] = [__FUNCTION__, $callable];
         return $this;
     }
 
     public function decorate(callable $callable) : static
     {
-        $this->extenders[] = [__FUNCTION__, $callable];
+        $this->postConstruction[] = [__FUNCTION__, $callable];
         return $this;
     }
 
@@ -153,7 +153,16 @@ class ClassDefinition extends Definition
     public function new(Container $container) : object
     {
         $object = parent::new($container);
-        return $this->applyExtenders($container, $object);
+
+        foreach ($this->postConstruction as $postConstruction) {
+            $object = $this->applyPostConstruction(
+                $container,
+                $object,
+                $postConstruction,
+            );
+        }
+
+        return $object;
     }
 
     protected function instantiate(Container $container) : object
@@ -167,17 +176,17 @@ class ClassDefinition extends Definition
             return $container->new($this->class);
         }
 
-        $instance = $this->reflection->newInstanceWithoutConstructor();
+        $object = $this->reflection->newInstanceWithoutConstructor();
         $properties = $this->getCollatedProperties($container);
 
         foreach ($properties as $name => $value) {
             $prop = $this->reflection->getProperty($name);
             $prop->setAccessible(true);
-            $prop->setValue($instance, $value);
+            $prop->setValue($object, $value);
         }
 
-        if (! method_exists($instance, '__construct')) {
-            return $instance;
+        if (! method_exists($object, '__construct')) {
+            return $object;
         }
 
         $arguments = $this->getCollatedArguments($container);
@@ -194,8 +203,8 @@ class ClassDefinition extends Definition
         }
 
         $this->expandVariadic($arguments);
-        $instance->__construct(...$arguments);
-        return $instance;
+        $object->__construct(...$arguments);
+        return $object;
     }
 
     protected function getCollatedProperties(Container $container) : array
@@ -381,22 +390,13 @@ class ClassDefinition extends Definition
         }
     }
 
-    protected function applyExtenders(Container $container, object $object) : object
-    {
-        foreach ($this->extenders as $extender) {
-            $object = $this->applyExtender($container, $object, $extender);
-        }
-
-        return $object;
-    }
-
-    protected function applyExtender(
+    protected function applyPostConstruction(
         Container $container,
         object $object,
-        array $extender,
+        array $postConstruction,
     ) : object
     {
-        list($type, $spec) = $extender;
+        list($type, $spec) = $postConstruction;
 
         switch ($type) {
             case 'decorate':

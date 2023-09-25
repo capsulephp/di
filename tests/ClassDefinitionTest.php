@@ -244,7 +244,7 @@ class ClassDefinitionTest extends DefinitionTestCase
         $this->assertSame('prop1value', $actual->getProp());
     }
 
-    public function testExtenders()
+    public function testPostConstruction()
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
         $definition->arguments(['foo']);
