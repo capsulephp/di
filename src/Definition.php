@@ -10,10 +10,12 @@ abstract class Definition extends Lazy
 {
     protected string $id;
 
-    protected ?string $class = null;protected mixed
+    protected ?string $class = null;
 
-    /* callable */
-    $factory = null;
+    /**
+     * @var callable
+     */
+    protected mixed $factory = null;
 
     protected bool $isInstantiable = false;
 
