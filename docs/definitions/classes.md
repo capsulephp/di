@@ -250,6 +250,12 @@ $def->{Foo::CLASS}
     ]);
 ```
 
+> **Warning:**
+>
+> Property injection is to be avoided as much as possible, and is provided only
+> as a final fallback when no other approach is available. You should default to
+> constructor injection instead of property injection.
+
 ## Post-Construction
 
 These post-construction methods will be applied to the object after initial
