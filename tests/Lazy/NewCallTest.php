@@ -3,15 +3,16 @@ declare(strict_types=1);
 
 namespace Capsule\Di\Lazy;
 
+use Capsule\Di\ClassDefinition;
 use Capsule\Di\Definitions;
 use Capsule\Di\Fake;
-use stdClass;
 
 class NewCallTest extends LazyTestCase
 {
     protected function definitions() : Definitions
     {
         $def = parent::definitions();
+        assert($def->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $def->{Fake\Foo::CLASS}->argument('arg1', 'val1');
         return $def;
     }

@@ -13,7 +13,7 @@ abstract class Definition extends Lazy
     protected ?string $class = null;
 
     /**
-     * @var callable
+     * @var ?callable
      */
     protected mixed $factory = null;
 

@@ -51,6 +51,7 @@ class ClassDefinitionTest extends DefinitionTestCase
         $this->assertTrue($definition->hasArgument(0));
         $this->assertSame('foo', $definition->getArgument(0));
         $value =& $definition->refArgument(0);
+        assert(is_string($value));
         $value .= 'bar';
         $this->assertSame('foobar', $definition->getArgument(0));
     }
@@ -283,8 +284,11 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testInherit() : void
     {
         $def = $this->definitions;
+        assert($def->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $def->{Fake\Foo::CLASS}->argument('arg1', 'parent');
         $def->{Fake\Foo::CLASS}->property('prop1', 'prop1value');
+
+        assert($def->{Fake\FooFoo::CLASS} instanceof ClassDefinition);
         $def->{Fake\FooFoo::CLASS}->inherit($def)->argument('arg2', 'child');
 
         /** @var Fake\FooFoo */
@@ -302,7 +306,10 @@ class ClassDefinitionTest extends DefinitionTestCase
 
     public function testInherit_disabled() : void
     {
+        assert($this->definitions->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $this->definitions->{Fake\Foo::CLASS}->argument('arg1', 'parent');
+
+        assert($this->definitions->{Fake\FooFoo::CLASS} instanceof ClassDefinition);
         $this->definitions
             ->{Fake\FooFoo::CLASS}
             ->inherit(null)

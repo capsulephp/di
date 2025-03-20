@@ -17,9 +17,8 @@ class FunctionCall extends Lazy
     public function __invoke(Container $container) : mixed
     {
         $arguments = static::resolveArguments($container, $this->arguments);
-
-        /** @var callable */
         $function = $this->function;
+        assert(is_callable($function));
         return $function(...$arguments);
     }
 }

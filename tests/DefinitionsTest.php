@@ -29,6 +29,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
 
     public function testClonedEntries() : void
     {
+        assert($this->def->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $this->def->{'foo.clone'} = clone $this->def->{Fake\Foo::CLASS};
         $this->assertNotSame($this->def->{Fake\Foo::CLASS}, $this->def->{'foo.clone'});
     }

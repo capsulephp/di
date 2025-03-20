@@ -28,7 +28,7 @@ class DefinitionTestCase extends \PHPUnit\Framework\TestCase
     {
         try {
             $this->actual($definition);
-            $this->assertFalse(true, "Should not have been instantiated.");
+            throw new \LogicException("Should not have been instantiated.");
         } catch (Exception\NotInstantiated $e) {
             while (! empty($expect)) {
                 $e = $e->getPrevious();

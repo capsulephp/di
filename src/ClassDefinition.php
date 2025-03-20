@@ -86,6 +86,7 @@ class ClassDefinition extends Definition
             return $this;
         }
 
+        assert($def->{$parent} instanceof self);
         $this->inherit = $def->{$parent};
         return $this;
     }
