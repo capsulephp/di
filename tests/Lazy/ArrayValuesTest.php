@@ -41,6 +41,7 @@ class ArrayValuesTest extends LazyTestCase
             ['bar' => new Env('CAPSULE_DI_BAR', 'int')],
             'baz' => 'dib',
         ]);
+
         $foo = random_int(1, 100);
         putenv("CAPSULE_DI_FOO={$foo}");
         $bar = random_int(1, 100);

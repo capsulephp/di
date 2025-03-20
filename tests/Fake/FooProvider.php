@@ -15,8 +15,11 @@ class FooProvider implements Provider
         assert($def->{Foo::CLASS} instanceof ClassDefinition);
         $def->{Foo::CLASS}->argument(0, 'foo');
         $def->fooval = 'fooval';
-        $def->lazyfooval = $def->call(function (Container $container) {
-            return 'lazyfooval';
-        });
+
+        $def->lazyfooval = $def->call(
+            function (Container $container) {
+                return 'lazyfooval';
+            },
+        );
     }
 }

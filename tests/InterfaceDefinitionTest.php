@@ -24,9 +24,13 @@ class InterfaceDefinitionTest extends DefinitionTestCase
     public function testFactory() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
-        $definition->factory(function (Container $container) {
-            return new stdClass();
-        });
+
+        $definition->factory(
+            function (Container $container) {
+                return new stdClass();
+            },
+        );
+
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
 
@@ -41,6 +45,7 @@ class InterfaceDefinitionTest extends DefinitionTestCase
     public function testClass_notDefined() : void
     {
         $definition = new InterfaceDefinition(Fake\FooInterface::CLASS);
+
         $this->assertNotInstantiable(
             $definition,
             [

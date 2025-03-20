@@ -32,9 +32,11 @@ class EnvTest extends LazyTestCase
         $varname = 'CAPSULE_DI_' . random_int(1, 100);
         $lazy = new Env($varname);
         $this->expectException(Exception\NotDefined::CLASS);
+
         $this->expectExceptionMessage(
             "Evironment variable '{$varname}' is not defined.",
         );
+
         $this->actual($lazy);
     }
 }

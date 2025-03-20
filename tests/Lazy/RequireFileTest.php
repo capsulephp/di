@@ -10,15 +10,21 @@ class RequireFileTest extends LazyTestCase
         $lazy = new RequireFile(
             dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php',
         );
+
         $expect = 'included';
         $this->assertSame($expect, $this->actual($lazy));
     }
 
     public function testLazy() : void
     {
-        $lazy = new RequireFile(new Call(function ($container) {
-            return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php';
-        }));
+        $lazy = new RequireFile(
+            new Call(
+                function ($container) {
+                    return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php';
+                },
+            ),
+        );
+
         $expect = 'included';
         $this->assertSame($expect, $this->actual($lazy));
     }

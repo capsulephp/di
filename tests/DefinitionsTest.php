@@ -85,9 +85,13 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertInstanceOf(
             Lazy\Call::CLASS,
-            $this->def->call(function ($container) {
-            return true;
-        }));
+
+            $this->def->call(
+                function ($container) {
+                    return true;
+                },
+            ),
+        );
     }
 
     public function testCallableGet() : void
@@ -109,6 +113,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
     public function testCsEnv() : void
     {
         $this->assertInstanceOf(Lazy\Env::CLASS, $this->def->csEnv('CAPSULE_DI_FOO'));
+
         $this->assertInstanceOf(
             Lazy\Env::CLASS,
             $this->def->csEnv('CAPSULE_DI_FOO', 'int'),
@@ -118,6 +123,7 @@ class DefinitionsTest extends \PHPUnit\Framework\TestCase
     public function testEnv() : void
     {
         $this->assertInstanceOf(Lazy\Env::CLASS, $this->def->env('CAPSULE_DI_FOO'));
+
         $this->assertInstanceOf(
             Lazy\Env::CLASS,
             $this->def->env('CAPSULE_DI_FOO', 'int'),

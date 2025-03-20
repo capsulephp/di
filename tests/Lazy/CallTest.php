@@ -7,9 +7,12 @@ class CallTest extends LazyTestCase
 {
     public function test() : void
     {
-        $lazy = new Call(function ($container) {
-            return true;
-        });
+        $lazy = new Call(
+            function ($container) {
+                return true;
+            },
+        );
+
         $actual = $this->actual($lazy);
         $this->assertTrue($actual);
     }

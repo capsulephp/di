@@ -59,9 +59,16 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_lazy() : void
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
-        $definition->argument(0, new Lazy\Call(function ($container) {
-            return 'lazy';
-        }));
+
+        $definition->argument(
+            0,
+
+            new Lazy\Call(
+                function ($container) {
+                    return 'lazy';
+                },
+            ),
+        );
 
         /** @var Fake\Foo */
         $actual = $this->actual($definition);
@@ -85,10 +92,12 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_typed() : void
     {
         $definition = new ClassDefinition(Fake\Baz::CLASS);
+
         $definition->argument(
             stdClass::CLASS,
             $this->definitions->new(stdClass::CLASS),
         );
+
         $this->assertInstanceOf(Fake\Baz::CLASS, $this->actual($definition));
     }
 
@@ -110,6 +119,7 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_missingRequired() : void
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
+
         $this->assertNotInstantiable(
             $definition,
             [
@@ -124,6 +134,7 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_missingRequiredNullable() : void
     {
         $definition = new ClassDefinition(Fake\Bar::CLASS);
+
         $this->assertNotInstantiable(
             $definition,
             [
@@ -142,6 +153,7 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_missingUnionType() : void
     {
         $definition = new ClassDefinition(Fake\Zim::CLASS);
+
         $this->assertNotInstantiable(
             $definition,
             [
@@ -156,6 +168,7 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testArgument_typeDoesNotExist() : void
     {
         $definition = new ClassDefinition(Fake\BadHint::CLASS);
+
         $this->assertNotInstantiable(
             $definition,
             [
@@ -231,6 +244,7 @@ class ClassDefinitionTest extends DefinitionTestCase
     {
         $definition = new ClassDefinition(Fake\Gir::CLASS);
         $definition->arguments(['va10', 'val1', 'not-an-array']);
+
         $this->assertNotInstantiable(
             $definition,
             [
@@ -245,9 +259,13 @@ class ClassDefinitionTest extends DefinitionTestCase
     public function testFactory() : void
     {
         $definition = new ClassDefinition(Fake\Foo::CLASS);
-        $definition->factory(function ($container) {
-            return new stdClass();
-        });
+
+        $definition->factory(
+            function ($container) {
+                return new stdClass();
+            },
+        );
+
         $this->assertTrue($definition->isInstantiable($this->container));
         $this->assertInstanceOf(stdClass::CLASS, $this->actual($definition));
     }
@@ -268,13 +286,19 @@ class ClassDefinitionTest extends DefinitionTestCase
         $definition = new ClassDefinition(Fake\Foo::CLASS);
         $definition->arguments(['foo']);
         $definition->method('append', 'bar');
-        $definition->modify(function (Container $container, Fake\Foo $foo) {
-            $foo->append('baz');
-        });
-        $definition->decorate(function (Container $container, Fake\Foo $foo) {
-            $foo->append('dib');
-            return $foo;
-        });
+
+        $definition->modify(
+            function (Container $container, Fake\Foo $foo) {
+                $foo->append('baz');
+            },
+        );
+
+        $definition->decorate(
+            function (Container $container, Fake\Foo $foo) {
+                $foo->append('dib');
+                return $foo;
+            },
+        );
 
         /** @var Fake\Foo */
         $actual = $this->actual($definition);
@@ -287,7 +311,6 @@ class ClassDefinitionTest extends DefinitionTestCase
         assert($def->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $def->{Fake\Foo::CLASS}->argument('arg1', 'parent');
         $def->{Fake\Foo::CLASS}->property('prop1', 'prop1value');
-
         assert($def->{Fake\FooFoo::CLASS} instanceof ClassDefinition);
         $def->{Fake\FooFoo::CLASS}->inherit($def)->argument('arg2', 'child');
 
@@ -308,13 +331,15 @@ class ClassDefinitionTest extends DefinitionTestCase
     {
         assert($this->definitions->{Fake\Foo::CLASS} instanceof ClassDefinition);
         $this->definitions->{Fake\Foo::CLASS}->argument('arg1', 'parent');
-
         assert($this->definitions->{Fake\FooFoo::CLASS} instanceof ClassDefinition);
+
         $this->definitions
             ->{Fake\FooFoo::CLASS}
             ->inherit(null)
             ->argument('arg2', 'child');
+
         $definition = $this->definitions->{Fake\FooFoo::CLASS};
+
         $this->assertNotInstantiable(
             $definition,
             [

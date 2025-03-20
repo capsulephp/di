@@ -10,15 +10,21 @@ class IncludeFileTest extends LazyTestCase
         $lazy = new IncludeFile(
             dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php',
         );
+
         $expect = 'included';
         $this->assertSame($expect, $this->actual($lazy));
     }
 
     public function testLazy() : void
     {
-        $lazy = new IncludeFile(new Call(function ($container) {
-            return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php';
-        }));
+        $lazy = new IncludeFile(
+            new Call(
+                function ($container) {
+                    return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include_file.php';
+                },
+            ),
+        );
+
         $expect = 'included';
         $this->assertSame($expect, $this->actual($lazy));
     }

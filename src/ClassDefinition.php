@@ -257,6 +257,7 @@ class ClassDefinition extends Definition
     protected function collateProperties(Container $container) : void
     {
         $this->collatedProperties = [];
+
         $inherited = $this->inherit === null
             ? []
             : $this->inherit->getCollatedProperties($container);
@@ -285,6 +286,7 @@ class ClassDefinition extends Definition
     protected function collateArguments(Container $container) : void
     {
         $this->collatedArguments = [];
+
         $inherited = $this->inherit === null
             ? []
             : $this->inherit->getCollatedArguments($container);
@@ -380,6 +382,7 @@ class ClassDefinition extends Definition
 
         if (! $type instanceof ReflectionNamedType) {
             $kind = $type instanceof ReflectionUnionType ? 'Union' : 'Intersection';
+
             return new Exception\NotDefined(
                 "{$kind} typed argument {$position} (\${$name}) "
                     . "for class definition '{$this->id}' is not defined.",
