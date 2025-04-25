@@ -7,11 +7,14 @@ use Capsule\Di\Container;
 
 class GetCall extends Lazy
 {
+    /**
+     * @param mixed[] $arguments
+     */
     public function __construct(
         protected string|Lazy $id,
         protected string $method,
-        protected array $arguments)
-    {
+        protected array $arguments
+    ) {
     }
 
     public function __invoke(Container $container) : mixed

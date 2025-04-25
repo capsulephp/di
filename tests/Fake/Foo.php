@@ -5,6 +5,8 @@ namespace Capsule\Di\Fake;
 
 class Foo implements FooInterface
 {
+    public ?string $newProperty = null;
+
     public function __construct(
         public string $arg1,
         public string $arg2 = 'val2'

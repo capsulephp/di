@@ -34,6 +34,9 @@ class Definitions extends stdClass
         return null;
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function array(array $values = []) : Lazy\ArrayValues
     {
         return new Lazy\ArrayValues($values);
@@ -54,12 +57,12 @@ class Definitions extends stdClass
         return new Lazy\CallableNew($id);
     }
 
-    public function csEnv(string $varname, string $vartype = null) : Lazy\CsEnv
+    public function csEnv(string $varname, ?string $vartype = null) : Lazy\CsEnv
     {
         return new Lazy\CsEnv($varname, $vartype);
     }
 
-    public function env(string $varname, string $vartype = null) : Lazy\Env
+    public function env(string $varname, ?string $vartype = null) : Lazy\Env
     {
         return new Lazy\Env($varname, $vartype);
     }

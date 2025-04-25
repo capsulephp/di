@@ -13,7 +13,7 @@ class Gir
 
     public function __construct(
         public string $arg0,
-        string $arg1 = null,
+        ?string $arg1 = null,
         string ...$arg2
     ) {
         $this->arg1 = $arg1;

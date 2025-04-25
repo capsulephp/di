@@ -12,6 +12,9 @@ use Countable;
 
 class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggregate
 {
+    /**
+     * @param mixed[] $values
+     */
     public function __construct(protected array $values = [])
     {
     }
@@ -53,6 +56,9 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return count($this->values);
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function merge(iterable $values) : void
     {
         foreach ($values as $key => $value) {
@@ -69,6 +75,10 @@ class ArrayValues extends Lazy implements ArrayAccess, Countable, IteratorAggreg
         return new ArrayIterator($this->values);
     }
 
+    /**
+     * @param mixed[] $values
+     * @return mixed[]
+     */
     protected function resolveValues(Container $container, array $values) : array
     {
         $return = [];

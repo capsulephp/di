@@ -7,6 +7,9 @@ use Capsule\Di\Container;
 
 class StaticCall extends Lazy
 {
+    /**
+     * @param mixed[] $arguments
+     */
     public function __construct(
         protected Lazy|string $class,
         protected string $method,

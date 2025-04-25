@@ -15,7 +15,7 @@ class CsEnv extends Env
 
     public function __invoke(Container $container) : mixed
     {
-        $values = str_getcsv($this->getEnv());
+        $values = str_getcsv($this->getEnv(), escape: '\\');
 
         if ($this->vartype !== null) {
             foreach ($values as &$value) {

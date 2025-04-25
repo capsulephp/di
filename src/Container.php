@@ -9,8 +9,14 @@ use ReflectionClass;
 
 class Container implements ContainerInterface
 {
+    /**
+     * @var array<string, bool>
+     */
     protected array $has = [];
 
+    /**
+     * @var array<string, mixed>
+     */
     protected array $registry = [];
 
     /**

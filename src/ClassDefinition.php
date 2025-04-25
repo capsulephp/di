@@ -11,18 +11,37 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 
+/**
+ * @phpstan-type extender_spec callable|array{string, mixed[]}|array{string, mixed}
+ * @phpstan-type extender_array array{string, extender_spec}
+ */
 class ClassDefinition extends Definition
 {
+    /**
+     * @var mixed[]
+     */
     protected array $arguments = [];
 
+    /**
+     * @var list<extender_array>
+     */
     protected array $extenders = [];
 
+    /**
+     * @var ReflectionParameter[]
+     */
     protected array $parameters = [];
 
+    /**
+     * @var array<string, int>
+     */
     protected array $parameterNames = [];
 
     protected ?ClassDefinition $inherit = null;
 
+    /**
+     * @var array<int, mixed>
+     */
     protected array $collatedArguments;
 
     public function __construct(protected string $id)
@@ -84,6 +103,9 @@ class ClassDefinition extends Definition
         return $this->arguments[$position];
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
     public function arguments(array $arguments) : static
     {
         $this->arguments = [];
@@ -168,6 +190,9 @@ class ClassDefinition extends Definition
         return new $class(...$arguments);
     }
 
+    /**
+     * @return mixed[]
+     */
     protected function getCollatedArguments(Container $container) : array
     {
         if (! isset($this->collatedArguments)) {
@@ -236,6 +261,9 @@ class ClassDefinition extends Definition
         return false;
     }
 
+    /**
+     * @param mixed[] $inherited
+     */
     protected function collateInheritedArgument(
         int $position,
         ReflectionParameter $parameter,
@@ -302,6 +330,9 @@ class ClassDefinition extends Definition
         );
     }
 
+    /**
+     * @param mixed[] $arguments
+     */
     protected function expandVariadic(array &$arguments) : void
     {
         $lastParameter = end($this->parameters);
@@ -329,6 +360,7 @@ class ClassDefinition extends Definition
         }
 
         $values = array_pop($arguments);
+        assert(is_array($values));
 
         foreach ($values as $value) {
             $arguments[] = $value;
@@ -344,6 +376,9 @@ class ClassDefinition extends Definition
         return $object;
     }
 
+    /**
+     * @param extender_array $extender
+     */
     protected function applyExtender(
         Container $container,
         object $object,
@@ -354,19 +389,23 @@ class ClassDefinition extends Definition
 
         switch ($type) {
             case 'decorate':
+                assert(is_callable($spec));
                 $object = $spec($container, $object);
                 break;
 
             case 'method':
+                assert(is_array($spec));
                 list ($method, $arguments) = $spec;
                 $object->$method(...$arguments);
                 break;
 
             case 'modify':
+                assert(is_callable($spec));
                 $spec($container, $object);
                 break;
 
             case 'property':
+                assert(is_array($spec));
                 list($prop, $value) = $spec;
                 $object->$prop = Lazy::resolveArgument($container, $value);
                 break;
