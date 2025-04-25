@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.4.2
+
+- Soothe PHP 8.4 by removing implicit nulls.
+
+- Soothe PHPStan.
+
 ## 3.4.1
 
 - ClassDefinition::collateTypedArgument() now uses Lazy\Get() to defer
